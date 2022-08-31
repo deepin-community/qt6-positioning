@@ -1,0 +1,92 @@
+Source: qt6-positioning
+Section: libs
+Priority: optional
+Maintainer: Deepin Developer <deepin-dev@deepin.org>
+Uploaders: Deepin Packages Builder <packages@deepin.org>
+Build-Depends: cmake (>= 3.18~),
+               debhelper-compat (= 13),
+               libgl-dev,
+               libqt6opengl6-dev (>= 6.2.4~),
+               libqt6serialport6-dev (>= 6.2.4~),
+               libssl-dev,
+               libvulkan-dev [linux-any],
+               ninja-build,
+               pkg-config,
+               pkg-kde-tools,
+               qml6-module-qttest (>= 6.2.4~),
+               qt6-base-dev (>= 6.2.4~),
+               qt6-base-private-dev (>= 6.2.4~),
+               qt6-declarative-dev (>= 6.2.4~),
+               qt6-declarative-private-dev (>= 6.2.4~),
+               rapidjson-dev (>= 1.1.0),
+               xauth <!nocheck>,
+               xvfb <!nocheck>,
+               zlib1g-dev,
+Standards-Version: 4.6.0
+Homepage: https://www.qt.io/developers/
+Rules-Requires-Root: no
+
+Package: libqt6positioning6
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 6 Positioning library
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains Qt 6 Positioning library.
+
+Package: libqt6positioningquick6
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Qt 6 Positioning library - Qt Quick library
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contain the Qt Quick interface for the Qt 6 Positioning library.
+
+Package: libqt6positioning6-plugins
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libqt6positioning6 (= ${binary:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Qt 6 Positioning module - position plugins
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains Qt 6 Positioning plugins.
+
+Package: qml6-module-qtpositioning
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libqt6positioning6-plugins (= ${binary:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends},
+Description: Qt 6 Positioning QML module
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the Qt 6 Positioning QML plugin for Qt Declarative.
+
+Package: qt6-positioning-dev
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: libqt6positioning6 (= ${binary:Version}),
+         libqt6positioning6-plugins (= ${binary:Version}),
+         libqt6positioningquick6 (= ${binary:Version}),
+         qt6-base-dev,
+         qt6-declarative-dev,
+         ${misc:Depends},
+Description: Qt 6 Positioning - development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the header development files used for building Qt 6
+ applications using Qt 6 Positioning library.

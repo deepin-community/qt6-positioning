@@ -1,0 +1,6 @@
+# Lintian gives a false positive for the globbing order.
+# See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=970274
+qt6-positioning source: globbing-patterns-out-of-order debian/copyright examples/* *.qdoc examples/positioning/geoflickr/doc/src/geoflickr.qdoc
+qt6-positioning source: globbing-patterns-out-of-order debian/copyright examples/* *.qdoc examples/positioning/logfilepositionsource/doc/src/logfilepositionsource.qdoc
+qt6-positioning source: globbing-patterns-out-of-order debian/copyright examples/* *.qdoc examples/positioning/satelliteinfo/doc/src/satelliteinfo.qdoc
+qt6-positioning source: globbing-patterns-out-of-order debian/copyright examples/* *.qdoc examples/positioning/weatherinfo/doc/src/weatherinfo.qdoc
