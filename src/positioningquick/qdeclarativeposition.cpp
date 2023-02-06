@@ -1,43 +1,6 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 Jolla Ltd.
-** Contact: Aaron McCarthy <aaron.mccarthy@jollamobile.com>
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the QtPositioning module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 3 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL3 included in the
-** packaging of this file. Please review the following information to
-** ensure the GNU Lesser General Public License version 3 requirements
-** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 2.0 or (at your option) the GNU General
-** Public license version 3 or any later version approved by the KDE Free
-** Qt Foundation. The licenses are as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-2.0.html and
-** https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 Jolla Ltd.
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include <QtCore/QtNumeric>
 #include "qdeclarativeposition_p.h"
@@ -159,6 +122,12 @@ void QDeclarativePosition::setPosition(const QGeoPositionInfo &info)
     const bool verticalAccuracyChanged = !equalOrNaN(pVerticalAccuracy, verticalAccuracy);
     const bool verticalAccuracyValidChanged = exclusiveNaN(pVerticalAccuracy, verticalAccuracy);
 
+    // direction accuracy
+    const qreal pDirectionAccuracy = m_info.attribute(QGeoPositionInfo::DirectionAccuracy);
+    const qreal directionAccuracy = info.attribute(QGeoPositionInfo::DirectionAccuracy);
+    const bool directionAccuracyChanged = !equalOrNaN(pDirectionAccuracy, directionAccuracy);
+    const bool directionAccuracyValidChanged = exclusiveNaN(pDirectionAccuracy, directionAccuracy);
+
     m_info = info;
 
     if (timestampChanged)
@@ -202,6 +171,11 @@ void QDeclarativePosition::setPosition(const QGeoPositionInfo &info)
         m_computedMagneticVariation.notify();
     if (magneticVariationValidChanged)
         m_computedMagneticVariationValid.notify();
+
+    if (directionAccuracyChanged)
+        m_computedDirectionAccuracy.notify();
+    if (directionAccuracyValidChanged)
+        m_computedDirectionAccuracyValid.notify();
 }
 
 const QGeoPositionInfo &QDeclarativePosition::position() const
@@ -292,6 +266,16 @@ QBindable<double> QDeclarativePosition::bindableMagneticVariation() const
 QBindable<bool> QDeclarativePosition::bindableMagneticVariationValid() const
 {
     return QBindable<bool>(&m_computedMagneticVariationValid);
+}
+
+QBindable<double> QDeclarativePosition::bindableDirectionAccuracy() const
+{
+    return QBindable<double>(&m_computedDirectionAccuracy);
+}
+
+QBindable<bool> QDeclarativePosition::bindableDirectionAccuracyValid() const
+{
+    return QBindable<bool>(&m_computedDirectionAccuracyValid);
 }
 
 /*!
@@ -618,4 +602,44 @@ double QDeclarativePosition::magneticVariationActualCalculation() const
     return m_info.attribute(QGeoPositionInfo::MagneticVariation);
 }
 
+/*!
+    \qmlproperty bool Position::directionAccuracyValid
+    \since Qt Positioning 6.3
+
+    This property is \c true if \l directionAccuracy has been set.
+
+    \sa directionAccuracy
+*/
+bool QDeclarativePosition::isDirectionAccuracyValid() const
+{
+    return m_computedDirectionAccuracyValid.value();
+}
+
+bool QDeclarativePosition::isDirectionAccuracyValidActualCalculation() const
+{
+    return !qIsNaN(m_info.attribute(QGeoPositionInfo::DirectionAccuracy));
+}
+
+/*!
+    \qmlproperty double Position::directionAccuracy
+    \since Qt Positioning 6.3
+
+    This property holds the accuracy of the provided \l direction in degrees.
+    This property is valid for Android and macOS/iOS only. See
+    \l {QGeoPositionInfo::Attribute} documentation for more details.
+
+    \sa direction, directionAccuracyValid
+*/
+double QDeclarativePosition::directionAccuracy() const
+{
+    return m_computedDirectionAccuracy.value();
+}
+
+double QDeclarativePosition::directionAccuracyActualCalculation() const
+{
+    return m_info.attribute(QGeoPositionInfo::DirectionAccuracy);
+}
+
 QT_END_NAMESPACE
+
+#include "moc_qdeclarativeposition_p.cpp"
