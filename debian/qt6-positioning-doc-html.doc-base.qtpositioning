@@ -1,0 +1,9 @@
+Document: qt6-positioning-manual
+Title: Qt 6 Positioning
+Author: The Qt Company Ltd
+Abstract: This is the HTML documentation for Qt 6 Positioning
+Section: Programming/C++
+
+Format: HTML
+Index: /usr/share/doc/qt6-positioning-doc-html/html/qtpositioning/qtpositioning-index.html
+Files: /usr/share/doc/qt6-positioning-doc-html/html/qtpositioning/*.html

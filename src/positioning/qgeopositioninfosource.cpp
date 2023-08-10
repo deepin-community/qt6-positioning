@@ -1,41 +1,5 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the QtPositioning module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 3 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL3 included in the
-** packaging of this file. Please review the following information to
-** ensure the GNU Lesser General Public License version 3 requirements
-** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 2.0 or (at your option) the GNU General
-** Public license version 3 or any later version approved by the KDE Free
-** Qt Foundation. The licenses are as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-2.0.html and
-** https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 #include <qgeopositioninfosource.h>
 #include "qgeopositioninfosource_p.h"
 #include "qgeopositioninfosourcefactory.h"
@@ -43,7 +7,6 @@
 #include <QFile>
 #include <QPluginLoader>
 #include <QStringList>
-#include <QJsonObject>
 #include <QCryptographicHash>
 #include <QtCore/private/qfactoryloader_p.h>
 #include <QtCore/private/qthread_p.h>
@@ -112,7 +75,7 @@ QGeoPositionInfoSourcePrivate::~QGeoPositionInfoSourcePrivate()
 
 }
 
-QGeoPositionInfoSourceFactory *QGeoPositionInfoSourcePrivate::loadFactory(const QJsonObject &meta)
+QGeoPositionInfoSourceFactory *QGeoPositionInfoSourcePrivate::loadFactory(const QCborMap &meta)
 {
     const int idx = static_cast<int>(meta.value(QStringLiteral("index")).toDouble());
     if (idx < 0)
@@ -123,9 +86,9 @@ QGeoPositionInfoSourceFactory *QGeoPositionInfoSourcePrivate::loadFactory(const 
     return qobject_cast<QGeoPositionInfoSourceFactory *>(instance);
 }
 
-QMultiHash<QString, QJsonObject> QGeoPositionInfoSourcePrivate::plugins(bool reload)
+QMultiHash<QString, QCborMap> QGeoPositionInfoSourcePrivate::plugins(bool reload)
 {
-    static QMultiHash<QString, QJsonObject> plugins;
+    static QMultiHash<QString, QCborMap> plugins;
     static bool alreadyDiscovered = false;
 
     if (reload == true)
@@ -138,7 +101,7 @@ QMultiHash<QString, QJsonObject> QGeoPositionInfoSourcePrivate::plugins(bool rel
     return plugins;
 }
 
-static bool pluginComparator(const QJsonObject &p1, const QJsonObject &p2)
+static bool pluginComparator(const QCborMap &p1, const QCborMap &p2)
 {
     const QString prio = QStringLiteral("Priority");
     if (p1.contains(prio) && !p2.contains(prio))
@@ -152,26 +115,26 @@ static bool pluginComparator(const QJsonObject &p1, const QJsonObject &p2)
     return (p1.value(prio).toDouble() > p2.value(prio).toDouble());
 }
 
-QList<QJsonObject> QGeoPositionInfoSourcePrivate::pluginsSorted()
+QList<QCborMap> QGeoPositionInfoSourcePrivate::pluginsSorted()
 {
-    QList<QJsonObject> list = plugins().values();
+    QList<QCborMap> list = plugins().values();
     std::stable_sort(list.begin(), list.end(), pluginComparator);
     return list;
 }
 
-void QGeoPositionInfoSourcePrivate::loadPluginMetadata(QMultiHash<QString, QJsonObject> &plugins)
+void QGeoPositionInfoSourcePrivate::loadPluginMetadata(QMultiHash<QString, QCborMap> &plugins)
 {
     QFactoryLoader *l = loader();
-    QList<QJsonObject> meta = l->metaData();
-    for (int i = 0; i < meta.size(); ++i) {
-        QJsonObject obj = meta.at(i).value(QStringLiteral("MetaData")).toObject();
-        const QString testableKey = QStringLiteral("Testable");
-        if (obj.contains(testableKey) && !obj.value(testableKey).toBool()) {
+    QList<QPluginParsedMetaData> meta = l->metaData();
+    for (qsizetype i = 0; i < meta.size(); ++i) {
+        QCborMap obj = meta.at(i).value(QtPluginMetaDataKeys::MetaData).toMap();
+        const QLatin1String testableKey("Testable");
+        if (!obj.value(testableKey).toBool(true)) {
             static bool inTest = qEnvironmentVariableIsSet("QT_QTESTLIB_RUNNING");
             if (inTest)
                 continue;
         }
-        obj.insert(QStringLiteral("index"), i);
+        obj.insert(QLatin1String("index"), static_cast<qint64>(i));
         plugins.insert(obj.value(QStringLiteral("Provider")).toString(), obj);
     }
 }
@@ -345,7 +308,7 @@ QGeoPositionInfoSource::bindablePreferredPositioningMethods()
     return QBindable<PositioningMethods>(&d->methods);
 }
 
-QGeoPositionInfoSource *QGeoPositionInfoSourcePrivate::createSourceReal(const QJsonObject &meta, const QVariantMap &parameters, QObject *parent)
+QGeoPositionInfoSource *QGeoPositionInfoSourcePrivate::createSourceReal(const QCborMap &meta, const QVariantMap &parameters, QObject *parent)
 {
     QGeoPositionInfoSource *s = nullptr;
     auto factory = QGeoPositionInfoSourcePrivate::loadFactory(meta);
@@ -385,8 +348,8 @@ QGeoPositionInfoSource *QGeoPositionInfoSource::createDefaultSource(QObject *par
 */
 QGeoPositionInfoSource *QGeoPositionInfoSource::createDefaultSource(const QVariantMap &parameters, QObject *parent)
 {
-    QList<QJsonObject> plugins = QGeoPositionInfoSourcePrivate::pluginsSorted();
-    foreach (const QJsonObject &obj, plugins) {
+    const QList<QCborMap> plugins = QGeoPositionInfoSourcePrivate::pluginsSorted();
+    foreach (const QCborMap &obj, plugins) {
         if (obj.value(QStringLiteral("Position")).isBool()
                 && obj.value(QStringLiteral("Position")).toBool()) {
             QGeoPositionInfoSource *source = QGeoPositionInfoSourcePrivate::createSourceReal(obj, parameters, parent);
@@ -638,3 +601,5 @@ QGeoPositionInfoSource::QGeoPositionInfoSource(QGeoPositionInfoSourcePrivate &dd
 */
 
 QT_END_NAMESPACE
+
+#include "moc_qgeopositioninfosource.cpp"

@@ -1,0 +1,4 @@
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/examples/positioning/geoflickr/geoflickr
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/examples/positioning/logfilepositionsource/logfilepositionsource
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/examples/positioning/satelliteinfo/satelliteinfo
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/examples/positioning/weatherinfo/weatherinfo

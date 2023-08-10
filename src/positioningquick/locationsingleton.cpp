@@ -1,46 +1,12 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the QtPositioning module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 3 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL3 included in the
-** packaging of this file. Please review the following information to
-** ensure the GNU Lesser General Public License version 3 requirements
-** will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 2.0 or (at your option) the GNU General
-** Public license version 3 or any later version approved by the KDE Free
-** Qt Foundation. The licenses are as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL2 and LICENSE.GPL3
-** included in the packaging of this file. Please review the following
-** information to ensure the GNU General Public License requirements will
-** be met: https://www.gnu.org/licenses/gpl-2.0.html and
-** https://www.gnu.org/licenses/gpl-3.0.html.
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+// Copyright (C) 2016 The Qt Company Ltd.
+// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "locationsingleton_p.h"
 #include <QtPositioning/private/qwebmercator_p.h>
 #include <QtPositioning/private/qdoublevector2d_p.h>
 #include <QDebug>
+
+QT_BEGIN_NAMESPACE
 
 static QGeoCoordinate parseCoordinate(const QJSValue &value, bool *ok)
 {
@@ -173,10 +139,11 @@ QGeoRectangle LocationSingleton::rectangle(const QGeoCoordinate &topLeft,
 QGeoRectangle LocationSingleton::rectangle(const QVariantList &coordinates) const
 {
     QList<QGeoCoordinate> internalCoordinates;
-    for (int i = 0; i < coordinates.size(); i++) {
-        if (coordinates.at(i).canConvert<QGeoCoordinate>())
-            internalCoordinates << coordinates.at(i).value<QGeoCoordinate>();
+    for (const auto &coordinate : coordinates) {
+        if (coordinate.canConvert<QGeoCoordinate>())
+            internalCoordinates << coordinate.value<QGeoCoordinate>();
     }
+
     return QGeoRectangle(internalCoordinates);
 }
 
@@ -269,10 +236,11 @@ QGeoPolygon LocationSingleton::polygon() const
 QGeoPolygon LocationSingleton::polygon(const QVariantList &coordinates) const
 {
     QList<QGeoCoordinate> internalCoordinates;
-    for (int i = 0; i < coordinates.size(); i++) {
-        if (coordinates.at(i).canConvert<QGeoCoordinate>())
-            internalCoordinates << coordinates.at(i).value<QGeoCoordinate>();
+    for (const auto &coordinate : coordinates) {
+        if (coordinate.canConvert<QGeoCoordinate>())
+            internalCoordinates << coordinate.value<QGeoCoordinate>();
     }
+
     return QGeoPolygon(internalCoordinates);
 }
 
@@ -287,21 +255,21 @@ QGeoPolygon LocationSingleton::polygon(const QVariantList &coordinates) const
 QGeoPolygon LocationSingleton::polygon(const QVariantList &perimeter, const QVariantList &holes) const
 {
     QList<QGeoCoordinate> internalCoordinates;
-    for (int i = 0; i < perimeter.size(); i++) {
-        if (perimeter.at(i).canConvert<QGeoCoordinate>())
-            internalCoordinates << perimeter.at(i).value<QGeoCoordinate>();
+    for (const auto &coordinate : perimeter) {
+        if (coordinate.canConvert<QGeoCoordinate>())
+            internalCoordinates << coordinate.value<QGeoCoordinate>();
     }
     QGeoPolygon poly(internalCoordinates);
 
-    for (int i = 0; i < holes.size(); i++) {
-        if (holes.at(i).metaType().id() == QMetaType::QVariantList) {
+    for (const auto &h : holes) {
+        if (h.metaType().id() == QMetaType::QVariantList) {
             QList<QGeoCoordinate> hole;
-            const QVariantList &holeData = holes.at(i).toList();
-            for (int j = 0; j < holeData.size(); j++) {
-                if (holeData.at(j).canConvert<QGeoCoordinate>())
-                    hole << holeData.at(j).value<QGeoCoordinate>();
+            const QVariantList &holeData = h.toList();
+            for (const auto &coord : holeData) {
+                if (coord.canConvert<QGeoCoordinate>())
+                    hole << coord.value<QGeoCoordinate>();
             }
-            if (hole.size())
+            if (!hole.isEmpty())
                 poly.addHole(hole);
         }
     }
@@ -385,3 +353,7 @@ QPointF LocationSingleton::coordToMercator(const QGeoCoordinate &coord) const
 {
     return QWebMercator::coordToMercator(coord).toPointF();
 }
+
+QT_END_NAMESPACE
+
+#include "moc_locationsingleton_p.cpp"

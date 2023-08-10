@@ -1,29 +1,32 @@
 Source: qt6-positioning
 Section: libs
 Priority: optional
-Maintainer: Deepin Developer <deepin-dev@deepin.org>
-Uploaders: Deepin Packages Builder <packages@deepin.org>
-Build-Depends: cmake (>= 3.18~),
+Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Patrick Franz <deltaone@debian.org>, Lu YaNing <dluyaning@gmail.com>
+Build-Depends: cmake (>= 3.24~),
                debhelper-compat (= 13),
                libgl-dev,
-               libqt6opengl6-dev (>= 6.2.4~),
-               libqt6serialport6-dev (>= 6.2.4~),
                libssl-dev,
                libvulkan-dev [linux-any],
                ninja-build,
                pkg-config,
                pkg-kde-tools,
-               qml6-module-qttest (>= 6.2.4~),
-               qt6-base-dev (>= 6.2.4~),
-               qt6-base-private-dev (>= 6.2.4~),
-               qt6-declarative-dev (>= 6.2.4~),
-               qt6-declarative-private-dev (>= 6.2.4~),
+               qml6-module-qttest (>= 6.4.2+dfsg~),
+               qt6-base-dev (>= 6.4.2+dfsg~),
+               qt6-base-private-dev (>= 6.4.2+dfsg~),
+               qt6-declarative-dev (>= 6.4.2+dfsg~),
+               qt6-declarative-private-dev (>= 6.4.2+dfsg~),
+               qt6-serialport-dev (>= 6.4.2~),
                rapidjson-dev (>= 1.1.0),
                xauth <!nocheck>,
                xvfb <!nocheck>,
                zlib1g-dev,
-Standards-Version: 4.6.0
+Build-Depends-Indep: qt6-base-dev (>= 6.4~) <!nodoc>,
+                     qt6-documentation-tools (>= 6.4~) <!nodoc>,
+Standards-Version: 4.6.2
 Homepage: https://www.qt.io/developers/
+Vcs-Browser: https://salsa.debian.org/qt-kde-team/qt6/qt6-positioning
+Vcs-Git: https://salsa.debian.org/qt-kde-team/qt6/qt6-positioning.git
 Rules-Requires-Root: no
 
 Package: libqt6positioning6
@@ -90,3 +93,48 @@ Description: Qt 6 Positioning - development files
  .
  This package contains the header development files used for building Qt 6
  applications using Qt 6 Positioning library.
+
+Package: qt6-positioning-doc
+Architecture: all
+Multi-Arch: foreign
+Section: doc
+Depends: qt6-base-doc, ${misc:Depends},
+Description: Qt 6 Positioning documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the documentation for Qt 6 Positioning.
+
+Package: qt6-positioning-doc-html
+Architecture: all
+Multi-Arch: foreign
+Section: doc
+Depends: qt6-base-doc-html, ${misc:Depends},
+Description: Qt 6 Positioning HTML documentation
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the HTML documentation for Qt 6 Positioning.
+
+Package: qt6-positioning-doc-dev
+Architecture: all
+Multi-Arch: foreign
+Section: libdevel
+Depends: qt6-base-doc-dev, ${misc:Depends},
+Description: Qt 6 Positioning tags files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the doxygen tags files for the Qt Positioning
+ documentation.
+
+Package: qt6-positioning-examples
+Architecture: any
+Multi-Arch: same
+Section: misc
+Depends: ${misc:Depends}, ${shlibs:Depends},
+Description: Qt 6 Positioning examples
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the examples for the Qt Positioning submodule.
