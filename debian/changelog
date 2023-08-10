@@ -1,11 +1,147 @@
-qt6-positioning (6.2.4.1-1+dde) stable; urgency=medium
+qt6-positioning (6.4.2-3) unstable; urgency=medium
 
-  * Adapt to V23.
+  [ Patrick Franz ]
+  * Upload to unstable.
 
- -- Lu YaNing <luyaning@uniontech.com>  Sun, 09 Oct 2022 16:36:38 +0800
+ -- Patrick Franz <deltaone@debian.org>  Tue, 01 Aug 2023 19:27:46 +0200
 
-qt6-positioning (6.2.4-1+dde) stable; urgency=medium
+qt6-positioning (6.4.2-2) experimental; urgency=medium
 
-  * ['Rebuild  against by  current gcc 11.2']
+  [ Patrick Franz ]
+  * Remove build-dependency on libqt6opengl6-dev as it has been merged
+    into qt6-base-dev.
+  * Add binary package for examples (Closes: #1042245).
+  * Update symbols from buildlogs.
+  * Add binary packages for documentation.
 
- -- Deepin Packages Builder <packages@deepin.org>  Wed, 31 Aug 2022 15:46:29 +0800
+ -- Patrick Franz <deltaone@debian.org>  Sat, 29 Jul 2023 15:01:25 +0200
+
+qt6-positioning (6.4.2-1) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Switch to the official 6.4.2 tarball, the tarball is the same.
+
+ -- Patrick Franz <deltaone@debian.org>  Sun, 29 Jan 2023 00:34:49 +0100
+
+qt6-positioning (6.4.2~rc1-2) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Fri, 30 Dec 2022 16:58:36 +0100
+
+qt6-positioning (6.4.2~rc1-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.4.2).
+  * Bump Qt B-Ds to 6.4.2.
+  * Bump Standards-Version to 4.6.2 (no changes needed).
+
+ -- Patrick Franz <deltaone@debian.org>  Tue, 27 Dec 2022 22:27:09 +0100
+
+qt6-positioning (6.4.1-2) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * Adjust build-dependencies.
+  * Pass QT_HOST_PATH to cmake in cross-builds, thx to Helmut Grohne
+    (Closes: #1023075).
+
+ -- Patrick Franz <deltaone@debian.org>  Sun, 11 Dec 2022 01:23:18 +0100
+
+qt6-positioning (6.4.1-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.4.1).
+  * Bump Qt B-Ds to 6.4.1.
+  * Update symbols from buildlogs.
+  * Enable link time optimization.
+
+ -- Patrick Franz <deltaone@debian.org>  Wed, 16 Nov 2022 07:08:41 +0100
+
+qt6-positioning (6.4.0-1) experimental; urgency=medium
+
+  [ Lisandro Damián Nicanor Pérez Meyer ]
+  * Bump minimum CMake version in order to get pkg-config's .pc files.
+
+  [ Patrick Franz ]
+  * Increase CMake verbosity level.
+  * New upstream release (6.4.0).
+  * Bump Qt B-Ds to 6.4.0.
+  * Remove patches as they have been applied upstream.
+  * Update list of installed files.
+  * Update symbols from buildlogs.
+
+ -- Patrick Franz <deltaone@debian.org>  Thu, 13 Oct 2022 12:29:22 +0200
+
+qt6-positioning (6.3.1-2) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Mon, 15 Aug 2022 19:22:59 +0200
+
+qt6-positioning (6.3.1-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.3.1).
+  * Bump Qt B-Ds to 6.3.1.
+  * Bump Standards-Version to 4.6.1 (no changes needed).
+  * Update patches.
+  * Update list of installed files.
+
+ -- Patrick Franz <deltaone@debian.org>  Sun, 17 Jul 2022 03:59:07 +0200
+
+qt6-positioning (6.3.0-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.3.0).
+  * Bump Qt B-Ds to 6.3.0.
+  * Update list of installed files.
+  * Update symbols from buildlogs.
+
+ -- Patrick Franz <deltaone@debian.org>  Tue, 14 Jun 2022 21:24:10 +0200
+
+qt6-positioning (6.2.4-3) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Fri, 22 Apr 2022 20:06:57 +0200
+
+qt6-positioning (6.2.4-2) experimental; urgency=medium
+
+  * Team upload.
+  * Backport upstream commit deaf18f77fc67d7be6534843a009a47e8df40eb4 to enable
+    the geoclue2 plugin also on GNU/Hurd; patch
+    upstream_CMake-enable-geoclue2-also-on-GNU-Hurd.patch.
+  * Update symbols files from the logs of buildds.
+
+ -- Pino Toscano <pino@debian.org>  Sat, 16 Apr 2022 06:06:34 +0200
+
+qt6-positioning (6.2.4-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.2.4).
+  * Bump Qt B-Ds to 6.2.4.
+
+ -- Patrick Franz <deltaone@debian.org>  Wed, 30 Mar 2022 20:49:29 +0200
+
+qt6-positioning (6.2.2-3) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Tue, 15 Feb 2022 22:02:06 +0100
+
+qt6-positioning (6.2.2-2) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * Update symbols from buildlogs.
+
+ -- Patrick Franz <deltaone@debian.org>  Mon, 06 Dec 2021 00:32:37 +0100
+
+qt6-positioning (6.2.2-1) experimental; urgency=medium
+
+  * Initial release (Closes: #999636)
+
+ -- Patrick Franz <deltaone@debian.org>  Sun, 14 Nov 2021 23:12:17 +0100

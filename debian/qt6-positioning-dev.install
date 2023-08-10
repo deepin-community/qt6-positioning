@@ -37,11 +37,13 @@ usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qnmeapositioninfosource.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qnmeasatelliteinfosource.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qpositioningglobal.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qtpositioning-config.h
+usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qtpositioningexports.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioning/qtpositioningversion.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/QtPositioningQuick
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/QtPositioningQuickDepends
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/QtPositioningQuickVersion
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/qpositioningquickglobal.h
+usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/qtpositioningquickexports.h
 usr/include/${DEB_HOST_MULTIARCH}/qt6/QtPositioningQuick/qtpositioningquickversion.h
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6/FindGconf.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6/FindGypsy.cmake
@@ -52,6 +54,7 @@ usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningConfig.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningConfigVersion.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningConfigVersionImpl.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningDependencies.cmake
+usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningPlugins.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningTargets-none.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningTargets.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningVersionlessTargets.cmake
@@ -87,6 +90,8 @@ usr/lib/${DEB_HOST_MULTIARCH}/libQt6PositioningQuick.prl
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6PositioningQuick.so
 usr/lib/${DEB_HOST_MULTIARCH}/metatypes/qt6positioning_none_metatypes.json
 usr/lib/${DEB_HOST_MULTIARCH}/metatypes/qt6positioningquick_none_metatypes.json
+usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/Qt6Positioning.pc
+usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/Qt6PositioningQuick.pc
 usr/lib/${DEB_HOST_MULTIARCH}/qt6/mkspecs/modules/qt_lib_positioning.pri
 usr/lib/${DEB_HOST_MULTIARCH}/qt6/mkspecs/modules/qt_lib_positioningquick.pri
 usr/share/qt6/modules/Positioning.json
