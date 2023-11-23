@@ -2,13 +2,17 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
 #include "appmodel.h"
+#include "openmeteobackend.h"
 #include "openweathermapbackend.h"
 #include "weatherapibackend.h"
 
-#include <QGeoPositionInfoSource>
-#include <QGeoPositionInfo>
-#include <QGeoCircle>
-#include <QLoggingCategory>
+#include <QtPositioning/qgeocircle.h>
+#include <QtPositioning/qgeocoordinate.h>
+#if QT_CONFIG(permissions)
+#include <QtCore/qpermissions.h>
+#endif
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qloggingcategory.h>
 
 Q_LOGGING_CATEGORY(requestsLog, "wapp.requests")
 
@@ -40,15 +44,6 @@ QString WeatherData::dayOfWeek() const
     return m_dayOfWeek;
 }
 
-/*!
- * The icon value is based on OpenWeatherMap.org icon set. For details
- * see http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
- *
- * e.g. 01d ->sunny day
- *
- * The icon string will be translated to
- * http://openweathermap.org/img/w/01d.png
- */
 QString WeatherData::weatherIcon() const
 {
     return m_weather;
@@ -142,7 +137,8 @@ WeatherDataCache::WeatherDataPair WeatherDataCache::getWeatherData(const QString
     return qMakePair(QString(), QList<WeatherInfo>());
 }
 
-WeatherDataCache::WeatherDataPair WeatherDataCache::getWeatherData(const QGeoCoordinate &coordinate) const
+WeatherDataCache::WeatherDataPair
+WeatherDataCache::getWeatherData(const QGeoCoordinate &coordinate) const
 {
     if (m_gpsLocation.isValid() && !m_gpsName.isEmpty()) {
         const QGeoCircle area(m_gpsLocation, kCircleRadius);
@@ -155,7 +151,8 @@ WeatherDataCache::WeatherDataPair WeatherDataCache::getWeatherData(const QGeoCoo
     return qMakePair(QString(), QList<WeatherInfo>());
 }
 
-void WeatherDataCache::addCacheElement(const LocationInfo &location, const QList<WeatherInfo> &info)
+void WeatherDataCache::addCacheElement(const LocationInfo &location,
+                                       const QList<WeatherInfo> &info)
 {
     // It it expected that we have valid QGeoCoordinate only when the weather
     // is received based on coordinates.
@@ -227,6 +224,7 @@ AppModel::AppModel(QObject *parent) :
 
     d->m_supportedBackends.push_back(new OpenWeatherMapBackend(this));
     d->m_supportedBackends.push_back(new WeatherApiBackend(this));
+    d->m_supportedBackends.push_back(new OpenMeteoBackend(this));
     registerBackend(0);
 
 //! [1]
@@ -234,11 +232,35 @@ AppModel::AppModel(QObject *parent) :
 
     if (d->src) {
         d->useGps = true;
-        connect(d->src, SIGNAL(positionUpdated(QGeoPositionInfo)),
-                this, SLOT(positionUpdated(QGeoPositionInfo)));
-        connect(d->src, SIGNAL(errorOccurred(QGeoPositionInfoSource::Error)),
-                this, SLOT(positionError(QGeoPositionInfoSource::Error)));
+        connect(d->src, &QGeoPositionInfoSource::positionUpdated,
+                this, &AppModel::positionUpdated);
+        connect(d->src, &QGeoPositionInfoSource::errorOccurred,
+                this, &AppModel::positionError);
+#if QT_CONFIG(permissions)
+        QLocationPermission permission;
+        permission.setAccuracy(QLocationPermission::Precise);
+        permission.setAvailability(QLocationPermission::WhenInUse);
+
+        switch (qApp->checkPermission(permission)) {
+        case Qt::PermissionStatus::Undetermined:
+            qApp->requestPermission(permission, [this] (const QPermission& permission) {
+                if (permission.status() == Qt::PermissionStatus::Granted)
+                    d->src->startUpdates();
+                else
+                    positionError(QGeoPositionInfoSource::AccessError);
+            });
+            break;
+        case Qt::PermissionStatus::Denied:
+            qWarning("Location permission is denied");
+            positionError(QGeoPositionInfoSource::AccessError);
+            break;
+        case Qt::PermissionStatus::Granted:
+            d->src->startUpdates();
+            break;
+        }
+#else
         d->src->startUpdates();
+#endif
     } else {
         d->useGps = false;
         d->city = "Brisbane";
@@ -254,9 +276,7 @@ AppModel::~AppModel()
         d->src->stopUpdates();
     if (d->fcProp)
         delete d->fcProp;
-    foreach (WeatherData *inf, d->forecast)
-        delete inf;
-    d->forecast.clear();
+    qDeleteAll(d->forecast);
     delete d;
 }
 
@@ -333,8 +353,7 @@ bool AppModel::applyWeatherData(const QString &city, const QList<WeatherInfo> &w
     }
 
     // delete previous forecast
-    foreach (WeatherData *inf, d->forecast)
-        delete inf;
+    qDeleteAll(d->forecast);
     d->forecast.clear();
 
     // The first item in the list represents current weather.

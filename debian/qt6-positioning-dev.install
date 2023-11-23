@@ -88,11 +88,11 @@ usr/lib/${DEB_HOST_MULTIARCH}/libQt6Positioning.prl
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6Positioning.so
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6PositioningQuick.prl
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6PositioningQuick.so
-usr/lib/${DEB_HOST_MULTIARCH}/metatypes/qt6positioning_none_metatypes.json
-usr/lib/${DEB_HOST_MULTIARCH}/metatypes/qt6positioningquick_none_metatypes.json
 usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/Qt6Positioning.pc
 usr/lib/${DEB_HOST_MULTIARCH}/pkgconfig/Qt6PositioningQuick.pc
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/metatypes/qt6positioning_none_metatypes.json
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/metatypes/qt6positioningquick_none_metatypes.json
 usr/lib/${DEB_HOST_MULTIARCH}/qt6/mkspecs/modules/qt_lib_positioning.pri
 usr/lib/${DEB_HOST_MULTIARCH}/qt6/mkspecs/modules/qt_lib_positioningquick.pri
-usr/share/qt6/modules/Positioning.json
-usr/share/qt6/modules/PositioningQuick.json
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/modules/Positioning.json
+usr/lib/${DEB_HOST_MULTIARCH}/qt6/modules/PositioningQuick.json
