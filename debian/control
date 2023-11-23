@@ -2,7 +2,7 @@ Source: qt6-positioning
 Section: libs
 Priority: optional
 Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
-Uploaders: Patrick Franz <deltaone@debian.org>, Lu YaNing <dluyaning@gmail.com>
+Uploaders: Patrick Franz <deltaone@debian.org>, Lu YaNing <dluyaning@gmail.com>,
 Build-Depends: cmake (>= 3.24~),
                debhelper-compat (= 13),
                libgl-dev,
@@ -11,18 +11,18 @@ Build-Depends: cmake (>= 3.24~),
                ninja-build,
                pkg-config,
                pkg-kde-tools,
-               qml6-module-qttest (>= 6.4.2+dfsg~),
-               qt6-base-dev (>= 6.4.2+dfsg~),
-               qt6-base-private-dev (>= 6.4.2+dfsg~),
-               qt6-declarative-dev (>= 6.4.2+dfsg~),
-               qt6-declarative-private-dev (>= 6.4.2+dfsg~),
-               qt6-serialport-dev (>= 6.4.2~),
+               qt6-base-dev (>= 6.6.0+dfsg~),
+               qt6-base-private-dev (>= 6.6.0+dfsg~),
+               qt6-declarative-dev (>= 6.6.0+dfsg~),
+               qt6-declarative-private-dev (>= 6.6.0+dfsg~),
+               qt6-serialport-dev (>= 6.6.0~),
+               qt6-svg-dev (>= 6.6.0~),
                rapidjson-dev (>= 1.1.0),
                xauth <!nocheck>,
                xvfb <!nocheck>,
                zlib1g-dev,
-Build-Depends-Indep: qt6-base-dev (>= 6.4~) <!nodoc>,
-                     qt6-documentation-tools (>= 6.4~) <!nodoc>,
+Build-Depends-Indep: qt6-base-dev (>= 6.6~) <!nodoc>,
+                     qt6-documentation-tools (>= 6.6~) <!nodoc>,
 Standards-Version: 4.6.2
 Homepage: https://www.qt.io/developers/
 Vcs-Browser: https://salsa.debian.org/qt-kde-team/qt6/qt6-positioning
@@ -32,8 +32,8 @@ Rules-Requires-Root: no
 Package: libqt6positioning6
 Architecture: any
 Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends},
 Description: Qt 6 Positioning library
  Qt is a cross-platform C++ application framework. Qt's primary feature
  is its rich set of widgets that provide standard GUI functionality.
@@ -43,8 +43,8 @@ Description: Qt 6 Positioning library
 Package: libqt6positioningquick6
 Architecture: any
 Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Pre-Depends: ${misc:Pre-Depends},
+Depends: ${misc:Depends}, ${shlibs:Depends},
 Description: Qt 6 Positioning library - Qt Quick library
  Qt is a cross-platform C++ application framework. Qt's primary feature
  is its rich set of widgets that provide standard GUI functionality.
@@ -54,7 +54,7 @@ Description: Qt 6 Positioning library - Qt Quick library
 Package: libqt6positioning6-plugins
 Architecture: any
 Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
+Pre-Depends: ${misc:Pre-Depends},
 Depends: libqt6positioning6 (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends},
@@ -67,7 +67,7 @@ Description: Qt 6 Positioning module - position plugins
 Package: qml6-module-qtpositioning
 Architecture: any
 Multi-Arch: same
-Pre-Depends: ${misc:Pre-Depends}
+Pre-Depends: ${misc:Pre-Depends},
 Depends: libqt6positioning6-plugins (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends},
