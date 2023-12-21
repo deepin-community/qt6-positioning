@@ -1,6 +1,6 @@
 # SymbolsHelper-Confirmed: 6.6.0 amd64 armel armhf hppa i386 powerpc sh4
 libQt6Positioning.so.6 libqt6positioning6 #MINVER#
-* Build-Depends-Package: qt6-location-dev
+* Build-Depends-Package: qt6-positioning-dev
  Qt_6@Qt_6 6.6.0
  Qt_6_PRIVATE_API@Qt_6_PRIVATE_API 6.6.0
  _Z36qRegisterNormalizedMetaType_QGeoPathRK10QByteArray@Qt_6 6.6.0

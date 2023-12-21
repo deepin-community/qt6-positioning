@@ -1,6 +1,6 @@
-# SymbolsHelper-Confirmed: 6.6.0 amd64 armel armhf hppa i386 powerpc sh4
+# SymbolsHelper-Confirmed: 6.6.1 amd64
 libQt6PositioningQuick.so.6 libqt6positioningquick6 #MINVER#
-* Build-Depends-Package: qt6-location-dev
+* Build-Depends-Package: qt6-positioning-dev
  Qt_6@Qt_6 6.6.0
  Qt_6_PRIVATE_API@Qt_6_PRIVATE_API 6.6.0
  _Z24q_coordinateInterpolatorRK14QGeoCoordinateS1_d@Qt_6 6.6.0
@@ -87,6 +87,7 @@ libQt6PositioningQuick.so.6 libqt6positioningquick6 #MINVER#
  _ZN23QDeclarativeGeoLocation16setBoundingShapeERK9QGeoShape@Qt_6_PRIVATE_API 6.6.0
  _ZN23QDeclarativeGeoLocation16staticMetaObjectE@Qt_6_PRIVATE_API 6.6.0
  _ZN23QDeclarativeGeoLocation18bindableCoordinateEv@Qt_6_PRIVATE_API 6.6.0
+ _ZN23QDeclarativeGeoLocation19setLocationInternalERK12QGeoLocation@Qt_6_PRIVATE_API 6.6.1
  _ZN23QDeclarativeGeoLocation21bindableBoundingShapeEv@Qt_6_PRIVATE_API 6.6.0
  _ZN23QDeclarativeGeoLocation21setExtendedAttributesERK4QMapI7QString8QVariantE@Qt_6_PRIVATE_API 6.6.0
  _ZN23QDeclarativeGeoLocation26bindableExtendedAttributesEv@Qt_6_PRIVATE_API 6.6.0
