@@ -14,6 +14,7 @@
 #include <QtCore/QPermission>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimeZone>
+#include <QtCore/QSet>
 #include <android/log.h>
 
 Q_DECLARE_JNI_CLASS(QtPositioning, "org/qtproject/qt/android/positioning/QtPositioning")
@@ -239,6 +240,16 @@ namespace AndroidPositioning {
             if (!qFuzzyIsNull(value))
                 coordinate.setAltitude(value);
         }
+        // MSL altitude, available in API Level 34+.
+        // It will be available only if we requested it when starting updates.
+        if (QNativeInterface::QAndroidApplication::sdkVersion() >= 34) {
+            attributeExists = jniObject.callMethod<jboolean>("hasMslAltitude");
+            if (attributeExists) {
+                const jdouble value = jniObject.callMethod<jdouble>("getMslAltitudeMeters");
+                if (!qFuzzyIsNull(value))
+                    coordinate.setAltitude(value);
+            }
+        }
 
         info.setCoordinate(coordinate);
 
@@ -291,10 +302,18 @@ namespace AndroidPositioning {
         return info;
     }
 
+    using UniqueId = std::pair<int, int>;
+    static UniqueId getUid(const QGeoSatelliteInfo &info)
+    {
+        return std::make_pair(static_cast<int>(info.satelliteSystem()),
+                              info.satelliteIdentifier());
+    }
+
     QList<QGeoSatelliteInfo> satelliteInfoFromJavaLocation(JNIEnv *jniEnv,
                                                            jobjectArray satellites,
                                                            QList<QGeoSatelliteInfo>* usedInFix)
     {
+        QSet<UniqueId> uids;
         QList<QGeoSatelliteInfo> sats;
         jsize length = jniEnv->GetArrayLength(satellites);
         for (int i = 0; i<length; i++) {
@@ -345,7 +364,12 @@ namespace AndroidPositioning {
             // determining the position.
             const jboolean inFix = jniObj.callMethod<jboolean>("usedInFix");
 
+            const UniqueId id = getUid(info);
+            if (uids.contains(id))
+                continue;
+
             sats.append(info);
+            uids.insert(id);
 
             if (inFix)
                 usedInFix->append(info);
@@ -359,6 +383,7 @@ namespace AndroidPositioning {
     {
         QJniObject jniStatus(gnssStatus);
         QList<QGeoSatelliteInfo> sats;
+        QSet<UniqueId> uids;
 
         const int satellitesCount = jniStatus.callMethod<jint>("getSatelliteCount");
         for (int i = 0; i < satellitesCount; ++i) {
@@ -391,7 +416,12 @@ namespace AndroidPositioning {
             // determining the position.
             const jboolean inFix = jniStatus.callMethod<jboolean>("usedInFix", i);
 
+            const UniqueId id = getUid(info);
+            if (uids.contains(id))
+                continue;
+
             sats.append(info);
+            uids.insert(id);
 
             if (inFix)
                 usedInFix->append(info);
@@ -400,17 +430,23 @@ namespace AndroidPositioning {
         return sats;
     }
 
-    QGeoPositionInfo lastKnownPosition(bool fromSatellitePositioningMethodsOnly)
+    QGeoPositionInfo lastKnownPosition(bool fromSatellitePositioningMethodsOnly,
+                                       bool useAltitudeConverter)
     {
         QJniEnvironment env;
         if (!env.jniEnv())
             return QGeoPositionInfo();
 
-        if (!hasPositioningPermissions())
+        const auto accuracy = fromSatellitePositioningMethodsOnly
+                ? AccuracyType::Precise
+                : AccuracyType::Any;
+
+        if (!hasPositioningPermissions(accuracy))
             return {};
 
         QJniObject locationObj = QJniObject::callStaticMethod<jobject>(
-                positioningClass(), lastKnownPositionMethodId, fromSatellitePositioningMethodsOnly);
+                positioningClass(), lastKnownPositionMethodId, fromSatellitePositioningMethodsOnly,
+                useAltitudeConverter);
         jobject location = locationObj.object();
         if (location == nullptr)
             return QGeoPositionInfo();
@@ -431,6 +467,17 @@ namespace AndroidPositioning {
         return providerSelection;
     }
 
+    static AccuracyTypes
+    accuracyFromPositioningMethods(QGeoPositionInfoSource::PositioningMethods m)
+    {
+        AccuracyTypes types = AccuracyType::None;
+        if (m & QGeoPositionInfoSource::NonSatellitePositioningMethods)
+            types |= AccuracyType::Approximate;
+        if (m & QGeoPositionInfoSource::SatellitePositioningMethods)
+            types |= AccuracyType::Precise;
+        return types;
+    }
+
     QGeoPositionInfoSource::Error startUpdates(int androidClassKey)
     {
         QJniEnvironment env;
@@ -440,13 +487,15 @@ namespace AndroidPositioning {
         QGeoPositionInfoSourceAndroid *source = AndroidPositioning::idToPosSource()->value(androidClassKey);
 
         if (source) {
-            if (!hasPositioningPermissions())
+            const auto preferredMethods = source->preferredPositioningMethods();
+            const auto accuracy = accuracyFromPositioningMethods(preferredMethods);
+            if (!hasPositioningPermissions(accuracy))
                 return QGeoPositionInfoSource::AccessError;
 
             int errorCode = QJniObject::callStaticMethod<jint>(
                     positioningClass(), startUpdatesMethodId, androidClassKey,
-                    positioningMethodToInt(source->preferredPositioningMethods()),
-                    source->updateInterval());
+                    positioningMethodToInt(preferredMethods),
+                    source->updateInterval(), source->useAltitudeConverter());
             switch (errorCode) {
             case 0:
             case 1:
@@ -477,13 +526,15 @@ namespace AndroidPositioning {
         QGeoPositionInfoSourceAndroid *source = AndroidPositioning::idToPosSource()->value(androidClassKey);
 
         if (source) {
-            if (!hasPositioningPermissions())
+            const auto preferredMethods = source->preferredPositioningMethods();
+            const auto accuracy = accuracyFromPositioningMethods(preferredMethods);
+            if (!hasPositioningPermissions(accuracy))
                 return QGeoPositionInfoSource::AccessError;
 
             int errorCode = QJniObject::callStaticMethod<jint>(
                     positioningClass(), requestUpdateMethodId, androidClassKey,
-                    positioningMethodToInt(source->preferredPositioningMethods()),
-                    timeout);
+                    positioningMethodToInt(preferredMethods),
+                    timeout, source->useAltitudeConverter());
             switch (errorCode) {
             case 0:
             case 1:
@@ -506,7 +557,9 @@ namespace AndroidPositioning {
         QGeoSatelliteInfoSourceAndroid *source = AndroidPositioning::idToSatSource()->value(androidClassKey);
 
         if (source) {
-            if (!hasPositioningPermissions())
+            // Satellite Info request does not make sense with Approximate
+            // location permissions, so always check for Precise
+            if (!hasPositioningPermissions(AccuracyType::Precise))
                 return QGeoSatelliteInfoSource::AccessError;
 
             int interval = source->updateInterval();
@@ -532,16 +585,23 @@ namespace AndroidPositioning {
     }
 
 
-    bool hasPositioningPermissions()
+    bool hasPositioningPermissions(AccuracyTypes accuracy)
     {
         QLocationPermission permission;
-        permission.setAccuracy(QLocationPermission::Precise); // fine location (+ coarse on >= 31)
 
         // The needed permission depends on whether we run as a service or as an activity
         if (!QNativeInterface::QAndroidApplication::isActivityContext())
             permission.setAvailability(QLocationPermission::Always); // background location
 
-        const bool permitted = qApp->checkPermission(permission) == Qt::PermissionStatus::Granted;
+        bool permitted = false;
+        if (accuracy & AccuracyType::Precise) {
+            permission.setAccuracy(QLocationPermission::Precise);
+            permitted = qApp->checkPermission(permission) == Qt::PermissionStatus::Granted;
+        }
+        if (accuracy & AccuracyType::Approximate) {
+            permission.setAccuracy(QLocationPermission::Approximate);
+            permitted |= qApp->checkPermission(permission) == Qt::PermissionStatus::Granted;
+        }
 
         if (!permitted)
             qCWarning(lcPositioning) << "Position data not available due to missing permission";
@@ -555,7 +615,7 @@ static void positionUpdated(JNIEnv *env, jobject thiz, QtJniTypes::Location loca
 {
     Q_UNUSED(env);
     Q_UNUSED(thiz);
-    QGeoPositionInfo info = AndroidPositioning::positionInfoFromJavaLocation(location);
+    QGeoPositionInfo info = AndroidPositioning::positionInfoFromJavaLocation(location.object());
 
     QGeoPositionInfoSourceAndroid *source = AndroidPositioning::idToPosSource()->value(androidClassKey);
     if (!source) {
@@ -640,7 +700,7 @@ static void satelliteGnssUpdated(JNIEnv *env, jobject thiz, QtJniTypes::GnssStat
 
     QList<QGeoSatelliteInfo> inUse;
     QList<QGeoSatelliteInfo> sats =
-            AndroidPositioning::satelliteInfoFromJavaGnssStatus(gnssStatus, &inUse);
+            AndroidPositioning::satelliteInfoFromJavaGnssStatus(gnssStatus.object(), &inUse);
 
     notifySatelliteInfoUpdated(sats, inUse, androidClassKey, isSingleUpdate);
 }
@@ -680,10 +740,12 @@ static bool registerNatives()
 
     GET_AND_CHECK_STATIC_METHOD(providerListMethodId, "providerList", jintArray);
     GET_AND_CHECK_STATIC_METHOD(lastKnownPositionMethodId, "lastKnownPosition",
-                                QtJniTypes::Location, bool);
-    GET_AND_CHECK_STATIC_METHOD(startUpdatesMethodId, "startUpdates", jint, jint, jint, jint);
+                                QtJniTypes::Location, bool, bool);
+    GET_AND_CHECK_STATIC_METHOD(startUpdatesMethodId, "startUpdates", jint, jint, jint, jint,
+                                bool);
     GET_AND_CHECK_STATIC_METHOD(stopUpdatesMethodId, "stopUpdates", void, jint);
-    GET_AND_CHECK_STATIC_METHOD(requestUpdateMethodId, "requestUpdate", jint, jint, jint, jint);
+    GET_AND_CHECK_STATIC_METHOD(requestUpdateMethodId, "requestUpdate", jint, jint, jint, jint,
+                                bool);
     GET_AND_CHECK_STATIC_METHOD(startSatelliteUpdatesMethodId, "startSatelliteUpdates",
                                 jint, jint, jint, bool);
 
@@ -698,6 +760,9 @@ Q_DECL_EXPORT jint JNICALL JNI_OnLoad(JavaVM * /*vm*/, void * /*reserved*/)
     initialized = true;
 
     __android_log_print(ANDROID_LOG_INFO, logTag, "Positioning start");
+
+    const auto context = QNativeInterface::QAndroidApplication::context();
+    QtJniTypes::QtPositioning::callStaticMethod<void>("setContext", context);
 
     if (!registerNatives()) {
         __android_log_print(ANDROID_LOG_FATAL, logTag, "registerNatives() failed");
