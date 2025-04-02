@@ -3,20 +3,20 @@ Upstream-Name: qtpositioning-everywhere-src
 Source: https://download.qt.io/archive/qt/*/submodules/
 
 Files: *
-Copyright: 2015-2021 The Qt Company Ltd.
+Copyright: 2015-2023 The Qt Company Ltd.
            2015-2016 Jolla Ltd.
            2013-2016 Aaron McCarthy <mccarthy.aaron@gmail.com>
 License: LGPL-3 or GPL-2
 
 Files: examples/*
        src/positioning/doc/snippets/*
-Copyright: 2017 The Qt Company Ltd.
+Copyright: 2017-2023 The Qt Company Ltd.
 License: BSD-3-clause
 
 Files: conanfile.py
        config.tests/*
        tests/*
-Copyright: 2016-2021 The Qt Company Ltd.
+Copyright: 2016-2023 The Qt Company Ltd.
 License: GPL-3 with Qt-1.0 exception
 
 Files: *.qdoc
@@ -60,7 +60,7 @@ Copyright: 2015-2019 The Qt Company Ltd.
 License: LGPL-3 or GPL-2+
 
 Files: debian/*
-Copyright: 2021 Patrick Franz <deltaone@debian.org>
+Copyright: 2021-2024 Patrick Franz <deltaone@debian.org>
            2021 Lu YaNing <dluyaning@gmail.com>
 License: LGPL-3 or GPL-2
 
