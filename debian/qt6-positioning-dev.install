@@ -57,6 +57,7 @@ usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningDependencies.cm
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningPlugins.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningTargets-none.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningTargets.cmake
+usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningVersionlessAliasTargets.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6PositioningVersionlessTargets.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFactoryGeoclue2PluginAdditionalTargetInfo.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFactoryGeoclue2PluginConfig.cmake
@@ -76,7 +77,6 @@ usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFact
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFactoryPollPluginConfigVersionImpl.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFactoryPollPluginTargets-none.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/Qt6QGeoPositionInfoSourceFactoryPollPluginTargets.cmake
-usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6Positioning/*.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickAdditionalTargetInfo.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickConfig.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickConfigVersion.cmake
@@ -84,9 +84,8 @@ usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickConfi
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickDependencies.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickTargets-none.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickTargets.cmake
+usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickVersionlessAliasTargets.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickVersionlessTargets.cmake
-usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/Qt6PositioningQuickTargets.cmake
-usr/lib/${DEB_HOST_MULTIARCH}/cmake/Qt6PositioningQuick/*.cmake
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6Positioning.prl
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6Positioning.so
 usr/lib/${DEB_HOST_MULTIARCH}/libQt6PositioningQuick.prl

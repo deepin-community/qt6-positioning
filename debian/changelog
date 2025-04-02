@@ -1,14 +1,74 @@
+qt6-positioning (6.8.0-0deepin1) unstable; urgency=medium
+
+  *Add package for the private headers.
+
+ -- lichenggang <lichenggang@deepin.org>  Wed, 02 Apr 2025 09:37:12 +0800
+
 qt6-positioning (6.8.0-0deepin) unstable; urgency=medium
 
   * New upstream release (6.8.0).
 
  -- lichenggang <lichenggang@deepin.org>  Sat, 26 Oct 2024 23:33:50 +0800
 
-qt6-positioning (6.6.1-1deepin0) experimental; urgency=medium
+qt6-positioning (6.7.2-4) unstable; urgency=medium
 
-  * No source change upload against GCC 12.
+  [ Patrick Franz ]
+  * Fix dependencies for the private symbols.
 
- -- Tianyu Chen <sweetyfish@deepin.org>  Fri, 20 Sep 2024 12:16:55 +0800
+ -- Patrick Franz <deltaone@debian.org>  Sun, 03 Nov 2024 19:16:12 +0100
+
+qt6-positioning (6.7.2-3) unstable; urgency=medium
+
+  [ Sandro Knauß ]
+  * Enable dh_qmldeps for QML module.
+  * Add qml6-module-qtpositioning to dev package for QML dependency
+    detection.
+
+ -- Patrick Franz <deltaone@debian.org>  Sat, 02 Nov 2024 00:48:11 +0100
+
+qt6-positioning (6.7.2-2) unstable; urgency=medium
+
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Sat, 05 Oct 2024 01:54:23 +0200
+
+qt6-positioning (6.7.2-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.7.2).
+  * Bump Qt B-Ds to 6.7.2.
+  * Update ABI to 6.7.2.
+  * Bump Standards-Version to 4.7.0 (no changes needed).
+  * Update symbols from buildlogs.
+
+ -- Patrick Franz <deltaone@debian.org>  Sat, 31 Aug 2024 10:09:23 +0200
+
+qt6-positioning (6.6.2-2) unstable; urgency=medium
+
+  [ Patrick Franz ]
+  * Upload to unstable.
+
+ -- Patrick Franz <deltaone@debian.org>  Thu, 06 Jun 2024 18:30:58 +0200
+
+qt6-positioning (6.6.2-1) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * New upstream release (6.6.2).
+  * Bump Qt B-Ds to 6.6.2.
+  * Build-depend on pkgconf instead of pkg-config as the latter has been
+    superseded by the former.
+  * Update ABI to 6.6.2 and rename it to qt6-*-private-abi.
+  * Update lintian-overrides.
+
+ -- Patrick Franz <deltaone@debian.org>  Sat, 17 Feb 2024 12:35:36 +0100
+
+qt6-positioning (6.6.1-2) experimental; urgency=medium
+
+  [ Patrick Franz ]
+  * Add package for the private headers.
+  * Update d/copyright.
+
+ -- Patrick Franz <deltaone@debian.org>  Tue, 09 Jan 2024 18:54:53 +0100
 
 qt6-positioning (6.6.1-1) experimental; urgency=medium
 

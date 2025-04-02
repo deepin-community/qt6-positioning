@@ -5,11 +5,12 @@ Maintainer: Debian Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
 Uploaders: Patrick Franz <deltaone@debian.org>, Lu YaNing <dluyaning@gmail.com>,
 Build-Depends: cmake (>= 3.24~),
                debhelper-compat (= 13),
+               dh-sequence-qmldeps,
                libgl-dev,
                libssl-dev,
                libvulkan-dev [linux-any],
                ninja-build,
-               pkg-config,
+               pkgconf,
                pkg-kde-tools,
                qt6-base-dev (>= 6.8.0+dfsg~),
                qt6-base-private-dev (>= 6.8.0+dfsg~),
@@ -17,13 +18,13 @@ Build-Depends: cmake (>= 3.24~),
                qt6-declarative-private-dev (>= 6.8.0+dfsg~),
                qt6-serialport-dev (>= 6.8.0~),
                qt6-svg-dev (>= 6.8.0~),
-               rapidjson-dev (>= 1.1.0),
+	       qml6-module-qtquick,
                xauth <!nocheck>,
                xvfb <!nocheck>,
                zlib1g-dev,
 Build-Depends-Indep: qt6-base-dev (>= 6.8~) <!nodoc>,
                      qt6-documentation-tools (>= 6.8~) <!nodoc>,
-Standards-Version: 4.6.2
+Standards-Version: 4.7.0
 Homepage: https://www.qt.io/developers/
 Vcs-Browser: https://salsa.debian.org/qt-kde-team/qt6/qt6-positioning
 Vcs-Git: https://salsa.debian.org/qt-kde-team/qt6/qt6-positioning.git
@@ -33,6 +34,7 @@ Package: libqt6positioning6
 Architecture: any
 Multi-Arch: same
 Pre-Depends: ${misc:Pre-Depends},
+Provides: qt6-positioning-private-abi (= 6.8.0),
 Depends: ${misc:Depends}, ${shlibs:Depends},
 Description: Qt 6 Positioning library
  Qt is a cross-platform C++ application framework. Qt's primary feature
@@ -71,6 +73,7 @@ Pre-Depends: ${misc:Pre-Depends},
 Depends: libqt6positioning6-plugins (= ${binary:Version}),
          ${misc:Depends},
          ${shlibs:Depends},
+         ${qml6:Depends},
 Description: Qt 6 Positioning QML module
  Qt is a cross-platform C++ application framework. Qt's primary feature
  is its rich set of widgets that provide standard GUI functionality.
@@ -84,6 +87,7 @@ Section: libdevel
 Depends: libqt6positioning6 (= ${binary:Version}),
          libqt6positioning6-plugins (= ${binary:Version}),
          libqt6positioningquick6 (= ${binary:Version}),
+         qml6-module-qtpositioning (= ${binary:Version}),
          qt6-base-dev,
          qt6-declarative-dev,
          ${misc:Depends},
@@ -93,6 +97,20 @@ Description: Qt 6 Positioning - development files
  .
  This package contains the header development files used for building Qt 6
  applications using Qt 6 Positioning library.
+
+Package: qt6-positioning-private-dev
+Architecture: any
+Multi-Arch: same
+Section: libdevel
+Depends: qt6-positioning-dev (= ${binary:Version}), ${misc:Depends},
+Description: Qt 6 Positioning - private development files
+ Qt is a cross-platform C++ application framework. Qt's primary feature
+ is its rich set of widgets that provide standard GUI functionality.
+ .
+ This package contains the private header development files used for
+ building Qt 6 applications using Qt 6 Positioning library.
+ .
+ Use at your own risk.
 
 Package: qt6-positioning-doc
 Architecture: all
