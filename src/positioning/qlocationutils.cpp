@@ -1,6 +1,8 @@
 // Copyright (C) 2016 Jolla Ltd.
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:critical reason:data-parser
+
 #include "qlocationutils_p.h"
 #include "qgeopositioninfo.h"
 #include "qgeosatelliteinfo.h"
@@ -292,6 +294,12 @@ QGeoSatelliteInfo::SatelliteSystem QLocationUtils::getSatelliteSystem(QByteArray
     if (key.startsWith("GQ") || key.startsWith("PQ") || key.startsWith("QZ"))
         return QGeoSatelliteInfo::QZSS;
 
+    // IRNSS: GI
+    if (key.startsWith("GI"))
+        return QGeoSatelliteInfo::IRNSS;
+
+    // SBAS: no talker id, should use satellite id range
+
     // Multiple: GN
     if (key.startsWith("GN"))
         return QGeoSatelliteInfo::Multiple;
@@ -303,6 +311,9 @@ QGeoSatelliteInfo::SatelliteSystem QLocationUtils::getSatelliteSystemBySatellite
 {
     if (satId >= 1 && satId <= 32)
         return QGeoSatelliteInfo::GPS;
+
+    if (satId >= 33 && satId <= 64)
+        return QGeoSatelliteInfo::SBAS;
 
     if (satId >= 65 && satId <= 96) // including future extensions
         return QGeoSatelliteInfo::GLONASS;
@@ -385,20 +396,26 @@ QLocationUtils::getSatInfoFromNmea(QByteArrayView bv, QList<QGeoSatelliteInfo> &
         infos.clear();
         return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
     }
+
+    // The hard max limit for the number of sentences in one message is used
+    // to prevent malicious messages. The protocol does not seem to define any
+    // maximum, but this value provides an upper limit that is more than enough
+    // in practice.
+    static constexpr quint32 MaxTotalSentences = 250;
     bool ok;
-    const int totalSentences = parts.at(1).toInt(&ok);
-    if (!ok) {
+    const quint32 totalSentences = parts.at(1).toUInt(&ok);
+    if (!ok || totalSentences > MaxTotalSentences) {
         infos.clear();
         return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
     }
 
-    const int sentence = parts.at(2).toInt(&ok);
-    if (!ok) {
+    const quint32 sentence = parts.at(2).toUInt(&ok);
+    if (!ok || sentence > totalSentences) {
         infos.clear();
         return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
     }
 
-    const int totalSats = parts.at(3).toInt(&ok);
+    const quint32 totalSats = parts.at(3).toUInt(&ok);
     if (!ok) {
         infos.clear();
         return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
@@ -406,15 +423,25 @@ QLocationUtils::getSatInfoFromNmea(QByteArrayView bv, QList<QGeoSatelliteInfo> &
 
     if (sentence == 1)
         infos.clear();
+    else if (infos.isEmpty()) // sentences out of order or DDoS spotted earlier
+        return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
 
-    const int numSatInSentence = qMin(sentence * 4, totalSats) - (sentence - 1) * 4;
+    static constexpr qsizetype MaxTotalSatellites = 1000;
+    const auto currentSatsSize = infos.size();
+    if (currentSatsSize > qint64(totalSats) || currentSatsSize > MaxTotalSatellites) {
+        // Maybe DDoS: otherwise, probably something is wrong; reject, either way.
+        infos.clear();
+        return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
+    }
+
+    const qint64 numSatInSentence = qMin(sentence * 4, totalSats) - (sentence - 1) * 4;
     if (parts.size() < (4 + numSatInSentence * 4)) {
         infos.clear();
         return QNmeaSatelliteInfoSource::FullyParsed; // Malformed sentence.
     }
 
     int field = 4;
-    for (int i = 0; i < numSatInSentence; ++i) {
+    for (qint64 i = 0; i < numSatInSentence; ++i) {
         QGeoSatelliteInfo info;
         info.setSatelliteSystem(system);
         int prn = parts.at(field++).toInt(&ok);
@@ -431,6 +458,13 @@ QLocationUtils::getSatInfoFromNmea(QByteArrayView bv, QList<QGeoSatelliteInfo> &
             if (prn <= 64)
                 prn += 64;
         }
+
+        // If the system is unknown, try to determine it based on prn.
+        // Note that the new value can vary among the satellites, so *do not*
+        // update the out-variable 'system'.
+        if (ok && system == QGeoSatelliteInfo::Undefined)
+            info.setSatelliteSystem(getSatelliteSystemBySatelliteId(prn));
+
         info.setSatelliteIdentifier((ok) ? prn : 0);
         const int elevation = parts.at(field++).toInt(&ok);
         info.setAttribute(QGeoSatelliteInfo::Elevation, (ok) ? elevation : 0);

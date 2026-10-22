@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qdoublevector2d_p.h"
 #include "qdoublevector3d_p.h"
@@ -16,31 +17,25 @@ QDoubleVector2D::QDoubleVector2D(const QDoubleVector3D &vector) :
 
 double QDoubleVector2D::length() const
 {
-    return qSqrt(xp * xp + yp * yp);
+    return qHypot(xp, yp);
 }
 
 QDoubleVector2D QDoubleVector2D::normalized() const
 {
-    // Need some extra precision if the length is very small.
-    double len = double(xp) * double(xp) +
-                 double(yp) * double(yp);
+    const double len = length();
     if (qFuzzyIsNull(len - 1.0))
         return *this;
     else if (!qFuzzyIsNull(len))
-        return *this / (double)qSqrt(len);
+        return *this / len;
     else
         return QDoubleVector2D();
 }
 
 void QDoubleVector2D::normalize()
 {
-    // Need some extra precision if the length is very small.
-    double len = double(xp) * double(xp) +
-                 double(yp) * double(yp);
+    double len = length();
     if (qFuzzyIsNull(len - 1.0) || qFuzzyIsNull(len))
         return;
-
-    len = qSqrt(len);
 
     xp /= len;
     yp /= len;

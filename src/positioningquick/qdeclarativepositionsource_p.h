@@ -1,5 +1,6 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QDECLARATIVEPOSITIONSOURCE_H
 #define QDECLARATIVEPOSITIONSOURCE_H
@@ -51,7 +52,6 @@ class Q_POSITIONINGQUICK_EXPORT QDeclarativePositionSource : public QObject, pub
                BINDABLE bindableSourceError)
     Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged BINDABLE bindableName)
     Q_PROPERTY(QQmlListProperty<QDeclarativePluginParameter> parameters READ parameters REVISION(5, 14))
-    Q_ENUMS(PositioningMethod)
 
     Q_CLASSINFO("DefaultProperty", "parameters")
     Q_INTERFACES(QQmlParserStatus)
@@ -64,8 +64,9 @@ public:
         AllPositioningMethods = QGeoPositionInfoSource::AllPositioningMethods
     };
 
+    Q_ENUM(PositioningMethod)
     Q_DECLARE_FLAGS(PositioningMethods, PositioningMethod)
-    Q_FLAGS(PositioningMethods)
+    Q_FLAG(PositioningMethods)
 
     enum SourceError {
         AccessError = QGeoPositionInfoSource::AccessError,
@@ -74,7 +75,7 @@ public:
         NoError = QGeoPositionInfoSource::NoError,
         UpdateTimeoutError = QGeoPositionInfoSource::UpdateTimeoutError,
     };
-    Q_ENUMS(SourceError)
+    Q_ENUM(SourceError)
 
     QDeclarativePositionSource();
     ~QDeclarativePositionSource();

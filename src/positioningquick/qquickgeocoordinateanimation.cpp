@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qquickgeocoordinateanimation_p.h"
 #include "qquickgeocoordinateanimation_p_p.h"
@@ -19,16 +20,18 @@ QT_BEGIN_NAMESPACE
     \brief A PropertyAnimation for geo coordinate properties.
 
     A specialized \l{PropertyAnimation} that defines an animation
-    between two \l{coordinate}{coordinates}.
+    between two \l{geoCoordinate}{coordinates}.
 
-    By default, a \l{latitude} of the \l{coordinate} is animated in the direction of shortest
+    By default, a \l{geoCoordinate::latitude}{latitude} of the
+    \l geoCoordinate is animated in the direction of shortest
     (geodesic) distance between those coordinates. Since CoordinateAnimation uses Mercator
-    map projection, the \l{latitude} animation is always between -90 and 90 degrees.
-    The \l{longitude} animation path is not limited and can go over 180 degrees
-    in both west and east directions.
+    map projection, the \l{geoCoordinate::latitude}{latitude} animation
+    is always between -90 and 90 degrees.
+    The \l{geoCoordinate::longitude}{longitude} animation path is not
+    limited and can go over 180 degrees in both west and east directions.
 
-    The \l{direction} property can be set to specify the direction in which the \l{longitude}
-    animation should occur.
+    The \l{direction} property can be set to specify the direction in which the
+    \l{geoCoordinate::longitude}{longitude} animation should occur.
 
     \sa {Animation and Transitions in Qt Quick}
 */
@@ -207,18 +210,21 @@ void QQuickGeoCoordinateAnimation::setTo(const QGeoCoordinate &t)
 
 /*!
     \qmlproperty enumeration CoordinateAnimation::direction
-    This property holds the direction of the \l{longitude} animation of the \l{coordinate}.
 
-    Possible values are:
+    This property holds the direction of the
+    \l{geoCoordinate::longitude}{longitude} animation of the
+    \l geoCoordinate.
 
-    \list
-    \li CoordinateAnimation.Shortest (default) - the longitude animation goes in the direction
-        that produces the shortest animation path.
-    \li CoordinateAnimation.West - the longitude animation always goes into western direction
+    \value CoordinateAnimation.Shortest
+        The longitude animation goes in the direction
+        that produces the shortest animation path. This is the default.
+    \value CoordinateAnimation.West
+        The longitude animation always goes into western direction
         and may cross the date line.
-    \li CoordinateAnimation.East - the longitude animation always goes into eastern direction
+    \value CoordinateAnimation.East
+        The longitude animation always goes into eastern direction
         and may cross the date line.
-    \endlist
+
     \since 5.5
 */
 

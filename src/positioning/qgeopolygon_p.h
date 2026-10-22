@@ -1,5 +1,6 @@
 // Copyright (C) 2018 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QGEOPOLYGON_P_H
 #define QGEOPOLYGON_P_H
@@ -21,54 +22,56 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_POSITIONING_EXPORT QGeoPolygonPrivate : public QGeoPathPrivate
+class Q_POSITIONING_EXPORT QGeoPolygonPrivate : public QGeoPathPrivateBase
 {
 public:
     QGeoPolygonPrivate();
     QGeoPolygonPrivate(const QList<QGeoCoordinate> &path);
+    QGeoPolygonPrivate(const QGeoPolygonPrivate &other);
     ~QGeoPolygonPrivate();
 
 // QGeoShape API
-    virtual QGeoShapePrivate *clone() const override;
-    virtual bool isValid() const override;
-    virtual bool contains(const QGeoCoordinate &coordinate) const override;
-    virtual void translate(double degreesLatitude, double degreesLongitude) override;
-    virtual bool operator==(const QGeoShapePrivate &other) const override;
+    QGeoShapePrivate *clone() const override;
+    bool isValid() const override;
+    bool contains(const QGeoCoordinate &coordinate) const override;
+    void translate(double degreesLatitude, double degreesLongitude) override;
+    bool operator==(const QGeoShapePrivate &other) const override;
     size_t hash(size_t seed) const override;
 
-// QGeoPath API
-    virtual void markDirty() override;
+// QGeoPathPrivateBase API
+    void markDirty() override;
 
 // QGeoPolygonPrivate API
     qsizetype holesCount() const;
     bool polygonContains(const QGeoCoordinate &coordinate) const;
     const QList<QGeoCoordinate> holePath(qsizetype index) const;
 
-    virtual void addHole(const QList<QGeoCoordinate> &holePath);
-    virtual void removeHole(qsizetype index);
-    virtual void updateClipperPath();
+    void addHole(const QList<QGeoCoordinate> &holePath);
+    void removeHole(qsizetype index);
+    void ensureClipperPathUpdated() const;
 
 // data members
-    bool m_clipperDirty = true;
     QList<QList<QGeoCoordinate>> m_holesList;
-    QClipperUtils m_clipperWrapper;
+    mutable QClipperUtils m_clipperWrapper; // cached
+    mutable double m_leftBoundWrapped = 0.0; // cached
+    mutable std::atomic<bool> m_clipperDirty = true;
 };
 
-class Q_POSITIONING_EXPORT QGeoPolygonPrivateEager : public QGeoPolygonPrivate
+class Q_POSITIONING_EXPORT QGeoPolygonPrivateEager final : public QGeoPolygonPrivate
 {
 public:
     QGeoPolygonPrivateEager();
     QGeoPolygonPrivateEager(const QList<QGeoCoordinate> &path);
+    QGeoPolygonPrivateEager(const QGeoPolygonPrivateEager &other);
     ~QGeoPolygonPrivateEager();
 
 // QGeoShape API
-    virtual QGeoShapePrivate *clone() const override;
-    virtual void translate(double degreesLatitude, double degreesLongitude) override;
+    QGeoShapePrivate *clone() const override;
+    void translate(double degreesLatitude, double degreesLongitude) override;
 
 // QGeoPath API
-    virtual void markDirty() override;
-    virtual void addCoordinate(const QGeoCoordinate &coordinate) override;
-    virtual void computeBoundingBox() override;
+    void markDirty() override;
+    void addCoordinate(const QGeoCoordinate &coordinate) override;
 
 // QGeoPolygonPrivate API
 

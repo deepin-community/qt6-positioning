@@ -1,5 +1,6 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QNMESATELLITEINFOSOURCE_P_H
 #define QNMESATELLITEINFOSOURCE_P_H
@@ -25,6 +26,8 @@
 #include <QtCore/qiodevice.h>
 #include <QtCore/qtimer.h>
 #include <QtCore/private/qglobal_p.h>
+
+#include <memory>
 
 QT_BEGIN_NAMESPACE
 
@@ -97,7 +100,7 @@ public:
     bool m_connectedReadyRead = false;
     QBasicTimer *m_updateTimer = nullptr; // the timer used in startUpdates()
     QTimer *m_requestTimer = nullptr; // the timer used in requestUpdate()
-    QScopedPointer<QNmeaSatelliteReader> m_nmeaReader;
+    std::unique_ptr<QNmeaSatelliteReader> m_nmeaReader;
     QNmeaSatelliteInfoSource::UpdateMode m_updateMode;
     int m_simulationUpdateInterval = 100;
 
@@ -137,7 +140,7 @@ public:
     int updateInterval() const;
 
 private:
-    QScopedPointer<QTimer> m_timer;
+    std::unique_ptr<QTimer> m_timer;
     int m_updateInterval;
 };
 

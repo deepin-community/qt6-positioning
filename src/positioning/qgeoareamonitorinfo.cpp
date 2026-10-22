@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include <QGeoAreaMonitorInfo>
 #include <QDateTime>
@@ -148,6 +149,12 @@ QGeoAreaMonitorInfo &QGeoAreaMonitorInfo::operator=(const QGeoAreaMonitorInfo &o
 
     Returns \c true if any of the \a lhs object's values are not the same as
     those of \a rhs object. Otherwise returns \c false.
+*/
+
+/*!
+    \fn void QGeoAreaMonitorInfo::swap(QGeoAreaMonitorInfo &other)
+    \since 6.2
+    \memberswap{QGeoAreaMonitorInfo object}
 */
 
 /*!

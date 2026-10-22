@@ -68,13 +68,13 @@ void tst_qgeoshape::debug_data()
     QTest::newRow("uninitialized") << QGeoShape() << 45
             << QString("QGeoShape(Unknown) 45");
     QTest::newRow("rectangle") << QGeoShape(QGeoRectangle()) << 45
-            << QString("QGeoShape(Rectangle) 45");
+            << QString("QGeoShape(Rectangle, (), ()) 45");
     QTest::newRow("circle") << QGeoShape(QGeoCircle()) << 45
-            << QString("QGeoShape(Circle) 45");
+            << QString("QGeoShape(Circle, center=(), radius=-1) 45");
     QTest::newRow("polygon") << QGeoShape(QGeoPolygon()) << 45
-            << QString("QGeoShape(Polygon) 45");
+            << QString("QGeoShape(Polygon, 0: ) 45");
     QTest::newRow("path") << QGeoShape(QGeoPath()) << 45
-            << QString("QGeoShape(Path) 45");
+            << QString("QGeoShape(Path, 0: ) 45");
 }
 
 
@@ -161,6 +161,37 @@ void tst_qgeoshape::serialization()
         readStream >> otherPolygon;
 
         QCOMPARE(otherPolygon, polygon);
+    }
+    // polygon with holes
+    {
+        QGeoPolygon polygon({ QGeoCoordinate(-50, 50),
+                              QGeoCoordinate(50, 50),
+                              QGeoCoordinate(50, -50),
+                              QGeoCoordinate(-50, -50) });
+
+        const QList<QGeoCoordinate> rectangle{ QGeoCoordinate(-20, 40),
+                                               QGeoCoordinate(30, 40),
+                                               QGeoCoordinate(30, 30),
+                                               QGeoCoordinate(-20, 30) };
+        const QList<QGeoCoordinate> triangle{ QGeoCoordinate(-10, -10),
+                                              QGeoCoordinate(-40, -40),
+                                              QGeoCoordinate(-20, -30) };
+
+        polygon.addHole(rectangle);
+        polygon.addHole(triangle);
+
+        QDataStream writeStream(&data, QDataStream::WriteOnly);
+        writeStream << polygon;
+
+        QGeoShape shape;
+        QDataStream readStream(&data, QDataStream::ReadOnly);
+        readStream >> shape;
+
+        QCOMPARE(shape, polygon);
+        QGeoPolygon polygonFromShape(shape);
+        QCOMPARE(polygonFromShape.holesCount(), 2);
+        QCOMPARE(polygonFromShape.holePath(0), rectangle);
+        QCOMPARE(polygonFromShape.holePath(1), triangle);
     }
     // path
     {

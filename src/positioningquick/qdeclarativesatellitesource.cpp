@@ -1,5 +1,6 @@
 // Copyright (C) 2022 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qdeclarativesatellitesource_p.h"
 
@@ -70,7 +71,11 @@ QDeclarativeSatelliteSource::QDeclarativeSatelliteSource()
 {
 }
 
-QDeclarativeSatelliteSource::~QDeclarativeSatelliteSource() = default;
+QDeclarativeSatelliteSource::~QDeclarativeSatelliteSource()
+{
+    if (m_source)
+        m_source->disconnect(this);
+}
 
 /*!
     \qmlproperty bool SatelliteSource::active
@@ -119,18 +124,20 @@ int QDeclarativeSatelliteSource::updateInterval() const
     This property holds the error which last occurred with the backend data
     provider.
 
-    \list
-        \li SatelliteSource.AccessError - The connection setup to the satellite
-            backend failed because the application lacked the required
-            privileges.
-        \li SatelliteSource.ClosedError - The satellite backend closed the
-            connection, which happens for example in case the user is switching
-            location services to off.
-        \li SatelliteSource.NoError - No error has occurred.
-        \li SatelliteSource.UnknownSourceError - An unidentified error occurred.
-        \li SatelliteSource.UpdateTimeoutError - The satellite information
-            could not be retrieved within the specified timeout.
-    \endlist
+    \value SatelliteSource.AccessError
+        The connection setup to the satellite
+        backend failed because the application lacked the required
+        privileges.
+    \value SatelliteSource.ClosedError
+        The satellite backend closed the
+        connection, which happens for example in case the user is switching
+        location services to off.
+    \value SatelliteSource.NoError
+        No error has occurred.
+    \value SatelliteSource.UnknownSourceError
+        An unidentified error occurred.
+    \value SatelliteSource.UpdateTimeoutError
+        The satellite information could not be retrieved within the specified timeout.
 */
 QDeclarativeSatelliteSource::SourceError QDeclarativeSatelliteSource::sourceError() const
 {
@@ -286,7 +293,7 @@ QVariant QDeclarativeSatelliteSource::backendProperty(const QString &name) const
 }
 
 /*!
-    \qmlmethod SatelliteSource::update(int timeout = 0)
+    \qmlmethod void SatelliteSource::update(int timeout = 0)
 
     A convenience method to request a single update from the satellite source.
     If there is no source available, this method has no effect.
@@ -299,7 +306,7 @@ QVariant QDeclarativeSatelliteSource::backendProperty(const QString &name) const
     (the default value), it defaults to a reasonable timeout period as
     appropriate for the source.
 
-    \sa start, stop, active
+    \sa start(), stop(), active
 */
 void QDeclarativeSatelliteSource::update(int timeout)
 {
@@ -312,13 +319,13 @@ void QDeclarativeSatelliteSource::update(int timeout)
 }
 
 /*!
-    \qmlmethod SatelliteSource::start()
+    \qmlmethod void SatelliteSource::start()
 
     Requests updates from the satellite source. Uses \l updateInterval if set,
     default interval otherwise. If there is no source available, this method
     has no effect.
 
-    \sa stop, update, active
+    \sa stop(), update(), active
 */
 void QDeclarativeSatelliteSource::start()
 {
@@ -329,12 +336,12 @@ void QDeclarativeSatelliteSource::start()
 }
 
 /*!
-    \qmlmethod SatelliteSource::stop()
+    \qmlmethod void SatelliteSource::stop()
 
     Stops updates from the satellite source. If there is no source available or
     it is not active, this method has no effect.
 
-    \sa start, update, active
+    \sa start(), update(), active
 */
 void QDeclarativeSatelliteSource::stop()
 {
