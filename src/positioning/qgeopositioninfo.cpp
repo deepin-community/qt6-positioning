@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 #include "qgeopositioninfo.h"
 #include "private/qgeopositioninfo_p.h"
 #include <QHash>
@@ -143,6 +144,12 @@ QGeoPositionInfo &QGeoPositionInfo::operator=(const QGeoPositionInfo & other)
 */
 
 /*!
+    \fn void QGeoPositionInfo::swap(QGeoPositionInfo &other)
+    \since 6.2
+    \memberswap{position information}
+*/
+
+/*!
     Returns true if the timestamp() and coordinate() values are both valid.
 
     \sa QGeoCoordinate::isValid(), QDateTime::isValid()
@@ -223,9 +230,7 @@ void QGeoPositionInfo::setAttribute(Attribute attribute, qreal value)
 */
 qreal QGeoPositionInfo::attribute(Attribute attribute) const
 {
-    if (d->doubleAttribs.contains(attribute))
-        return d->doubleAttribs[attribute];
-    return qQNaN();
+    return d->doubleAttribs.value(attribute, qQNaN());
 }
 
 /*!
@@ -233,8 +238,11 @@ qreal QGeoPositionInfo::attribute(Attribute attribute) const
 */
 void QGeoPositionInfo::removeAttribute(Attribute attribute)
 {
-    d.detach();
-    d->doubleAttribs.remove(attribute);
+    const auto it = d->doubleAttribs.constFind(attribute);
+    if (it != d->doubleAttribs.cend()) {
+        d.detach();
+        d->doubleAttribs.erase(it);
+    }
 }
 
 /*!

@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qgeolocation.h"
 #include "qgeolocation_p.h"
@@ -129,6 +130,12 @@ QGeoLocation &QGeoLocation::operator =(const QGeoLocation &other)
 
     Returns \c true if the \a lhs location is not equal to \a rhs, otherwise
     returns \c false.
+*/
+
+/*!
+    \fn void QGeoLocation::swap(QGeoLocation &other)
+    \since 6.2
+    \memberswap{location}
 */
 
 /*!

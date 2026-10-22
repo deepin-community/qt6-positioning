@@ -1,5 +1,6 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QGEOAREAMONITORPOLLING_H
 #define QGEOAREAMONITORPOLLING_H
@@ -12,6 +13,8 @@
  *  QGeoAreaMonitorPolling
  *
  */
+
+QT_BEGIN_NAMESPACE
 
 class QGeoAreaMonitorPollingPrivate;
 class QGeoAreaMonitorPolling : public QGeoAreaMonitorSource
@@ -60,5 +63,7 @@ private:
 
     bool hasConnections() const;
 };
+
+QT_END_NAMESPACE
 
 #endif // QGEOAREAMONITORPOLLING_H

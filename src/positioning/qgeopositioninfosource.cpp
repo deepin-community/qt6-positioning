@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 #include <qgeopositioninfosource.h>
 #include "qgeopositioninfosource_p.h"
 #include "qgeopositioninfosourcefactory.h"
@@ -308,6 +309,11 @@ QGeoPositionInfoSource::bindablePreferredPositioningMethods()
     return QBindable<PositioningMethods>(&d->methods);
 }
 
+/*!
+    \class QGeoPositionInfoSourcePrivate
+    \inmodule QtPositioning
+    \internal
+*/
 QGeoPositionInfoSource *QGeoPositionInfoSourcePrivate::createSourceReal(const QCborMap &meta, const QVariantMap &parameters, QObject *parent)
 {
     QGeoPositionInfoSource *s = nullptr;

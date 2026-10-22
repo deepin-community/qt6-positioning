@@ -1,6 +1,7 @@
 // Copyright (C) 2016 Jolla Ltd.
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 #include "qnmeapositioninfosource_p.h"
 #include "qgeopositioninfo_p.h"
 #include "qlocationutils_p.h"
@@ -75,7 +76,7 @@ static bool propagateDate(QGeoPositionInfo &dst, const QGeoPositionInfo &src)
 static bool propagateAttributes(QGeoPositionInfo &dst, const QGeoPositionInfo &src, bool force = true)
 {
     bool updated = false;
-    static Q_DECL_CONSTEXPR std::array<QGeoPositionInfo::Attribute, 6> attrs {
+    static constexpr std::array<QGeoPositionInfo::Attribute, 6> attrs {
                                                 { QGeoPositionInfo::GroundSpeed
                                                  ,QGeoPositionInfo::HorizontalAccuracy
                                                  ,QGeoPositionInfo::VerticalAccuracy
@@ -851,14 +852,14 @@ QNmeaPositionInfoSource::UpdateMode QNmeaPositionInfoSource::updateMode() const
 
 /*!
     Sets the NMEA data source to \a device. If the device is not open, it
-    will be opened in QIODevice::ReadOnly mode.
+    will be opened in \l{QIODeviceBase::}{ReadOnly} mode.
 
     The source device can only be set once and must be set before calling
-    startUpdates() or requestUpdate().
+    \l startUpdates() or \l requestUpdate().
 
-    \b {Note:} The \a device must emit QIODevice::readyRead() for the
+    \note The \a device must emit \l {QIODevice::readyRead()} for the
     source to be notified when data is available for reading.
-    QNmeaPositionInfoSource does not assume the ownership of the device,
+    \l QNmeaPositionInfoSource does not assume the ownership of the device,
     and hence does not deallocate it upon destruction.
 */
 void QNmeaPositionInfoSource::setDevice(QIODevice *device)

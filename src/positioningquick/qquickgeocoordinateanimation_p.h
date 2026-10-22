@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QQUICKGEOCOORDINATEANIMATION_P_H
 #define QQUICKGEOCOORDINATEANIMATION_P_H
@@ -29,8 +30,8 @@ class Q_POSITIONINGQUICK_EXPORT QQuickGeoCoordinateAnimation : public QQuickProp
     QML_NAMED_ELEMENT(CoordinateAnimation)
     QML_ADDED_IN_VERSION(5, 3)
     Q_DECLARE_PRIVATE(QQuickGeoCoordinateAnimation)
-    Q_PROPERTY(QGeoCoordinate from READ from WRITE setFrom)
-    Q_PROPERTY(QGeoCoordinate to READ to WRITE setTo)
+    Q_PROPERTY(QGeoCoordinate from READ from WRITE setFrom OVERRIDE)
+    Q_PROPERTY(QGeoCoordinate to READ to WRITE setTo OVERRIDE)
     Q_PROPERTY(Direction direction READ direction WRITE setDirection NOTIFY directionChanged
                        BINDABLE bindableDirection)
 

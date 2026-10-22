@@ -1,5 +1,6 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qgeoareamonitor_polling.h"
 #include <QtPositioning/qgeocoordinate.h>
@@ -17,8 +18,9 @@
 
 #define UPDATE_INTERVAL_5S  5000
 
-typedef QHash<QString, QGeoAreaMonitorInfo> MonitorTable;
+QT_BEGIN_NAMESPACE
 
+typedef QHash<QString, QGeoAreaMonitorInfo> MonitorTable;
 
 static QMetaMethod areaEnteredSignal()
 {
@@ -162,13 +164,13 @@ public:
 
         if (signalsConnected && !activeMonitorAreas.isEmpty()) {
             if (source)
-                source->startUpdates();
+                QMetaObject::invokeMethod(source, "startUpdates", Qt::QueuedConnection);
             else
                 //translated to InsufficientPositionInfo
                 emit positionError(QGeoPositionInfoSource::ClosedError);
         } else {
             if (source)
-                source->stopUpdates();
+                QMetaObject::invokeMethod(source, "stopUpdates", Qt::QueuedConnection);
         }
     }
 
@@ -337,6 +339,9 @@ bool QGeoAreaMonitorPolling::startMonitoring(const QGeoAreaMonitorInfo &monitor)
 
 int QGeoAreaMonitorPolling::idForSignal(const char *signal)
 {
+    if (qstrlen(signal) < 2)
+        return -1;
+
     const QByteArray sig = QMetaObject::normalizedSignature(signal + 1);
     const QMetaObject * const mo = metaObject();
 
@@ -362,9 +367,7 @@ bool QGeoAreaMonitorPolling::requestUpdate(const QGeoAreaMonitorInfo &monitor, c
     if (monitor.isPersistent())
         return false;
 
-    if (!signal)
-        return false;
-
+    // signal is validated in idForSignal()
     const int signalId = idForSignal(signal);
     if (signalId < 0)
         return false;
@@ -471,6 +474,8 @@ void QGeoAreaMonitorPolling::processAreaEvent(const QGeoAreaMonitorInfo &minfo,
     else
         emit areaExited(minfo, pinfo);
 }
+
+QT_END_NAMESPACE
 
 #include "qgeoareamonitor_polling.moc"
 #include "moc_qgeoareamonitor_polling.cpp"

@@ -1,5 +1,6 @@
 // Copyright (C) 2019 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qnmeasatelliteinfosource.h"
 #include "private/qnmeasatelliteinfosource_p.h"
@@ -431,7 +432,7 @@ QNmeaSatelliteInfoSource::UpdateMode QNmeaSatelliteInfoSource::updateMode() cons
 
 /*!
     Sets the NMEA data source to \a device. If the device is not open, it
-    will be opened in QIODevice::ReadOnly mode.
+    will be opened in \l{QIODeviceBase::}{ReadOnly} mode.
 
     The source device can only be set once and must be set before calling
     \l startUpdates() or \l requestUpdate().
@@ -707,9 +708,10 @@ void QNmeaSatelliteInfoUpdate::setSatellitesInView(QGeoSatelliteInfo::SatelliteS
         info.satellitesInUse.clear();
         info.validInUse = false;
         bool corrupt = false;
-        for (const auto id : info.inUseIds) {
+        const auto inUseIds = std::exchange(info.inUseIds, {});
+        for (const auto id : inUseIds) {
             bool found = false;
-            for (const auto &s : info.satellitesInView) {
+            for (const auto &s : std::as_const(info.satellitesInView)) {
                 if (s.satelliteIdentifier() == id) {
                     info.satellitesInUse.append(s);
                     found = true;
@@ -725,7 +727,6 @@ void QNmeaSatelliteInfoUpdate::setSatellitesInView(QGeoSatelliteInfo::SatelliteS
             }
         }
         info.validInUse = !corrupt;
-        info.inUseIds.clear();
     }
 
     m_validInUse = calculateValidInUse();
@@ -753,7 +754,7 @@ bool QNmeaSatelliteInfoUpdate::setSatellitesInUse(QGeoSatelliteInfo::SatelliteSy
 
     for (const auto id : inUse) {
         bool found = false;
-        for (const auto &s : info.satellitesInView) {
+        for (const auto &s : std::as_const(info.satellitesInView)) {
             if (s.satelliteIdentifier() == id) {
                 info.satellitesInUse.append(s);
                 found = true;

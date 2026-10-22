@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 #include <qgeosatelliteinfosource.h>
 #include <qgeosatelliteinfosource_p.h>
 #include "qgeopositioninfosourcefactory.h"
@@ -52,15 +53,14 @@ QT_BEGIN_NAMESPACE
     \l {Qt Positioning on Android}.
 */
 
-/*!
-    Creates a satellite source with the specified \a parent.
-*/
-
 QGeoSatelliteInfoSourcePrivate::~QGeoSatelliteInfoSourcePrivate()
 {
 
 }
 
+/*!
+    Creates a satellite source with the specified \a parent.
+*/
 QGeoSatelliteInfoSource::QGeoSatelliteInfoSource(QObject *parent)
         : QObject(*new QGeoSatelliteInfoSourcePrivate, parent)
 {

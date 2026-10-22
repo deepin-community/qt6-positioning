@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qgeoaddress.h"
 #include "qgeoaddress_p.h"
@@ -395,6 +396,12 @@ QGeoAddress::QGeoAddress(const QGeoAddress &other)
     \note The moved-from QGeoAddress object can only be destroyed or
     assigned to. The effect of calling other functions than the destructor
     or one of the assignment operators is undefined.
+*/
+
+/*!
+    \fn void QGeoAddress::swap(QGeoAddress &other)
+    \since 6.2
+    \memberswap{address}
 */
 
 /*!

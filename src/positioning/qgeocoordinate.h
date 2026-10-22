@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QGEOCOORDINATE_H
 #define QGEOCOORDINATE_H
@@ -21,7 +22,6 @@ QT_DECLARE_QSDP_SPECIALIZATION_DTOR_WITH_EXPORT(QGeoCoordinatePrivate, Q_POSITIO
 class Q_POSITIONING_EXPORT QGeoCoordinate
 {
     Q_GADGET
-    Q_ENUMS(CoordinateFormat)
 
     Q_PROPERTY(double latitude READ latitude WRITE setLatitude)
     Q_PROPERTY(double longitude READ longitude WRITE setLongitude)
@@ -44,6 +44,7 @@ public:
         DegreesMinutesSeconds,
         DegreesMinutesSecondsWithHemisphere
     };
+    Q_ENUM(CoordinateFormat)
 
     QGeoCoordinate();
     QGeoCoordinate(double latitude, double longitude);

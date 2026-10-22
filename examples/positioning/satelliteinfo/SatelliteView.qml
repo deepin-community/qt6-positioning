@@ -11,6 +11,8 @@ import SatelliteInformation
 Rectangle {
     id: root
 
+    signal cleanupFocus
+
     required property SortFilterModel sortFilterModel
     required property color inViewColor
     required property color inUseColor
@@ -24,7 +26,9 @@ Rectangle {
         {"name": "GLONASS", "id": GeoSatelliteInfo.GLONASS},
         {"name": "GALILEO", "id": GeoSatelliteInfo.GALILEO},
         {"name": "BEIDOU", "id": GeoSatelliteInfo.BEIDOU},
-        {"name": "QZSS", "id": GeoSatelliteInfo.QZSS}
+        {"name": "QZSS", "id": GeoSatelliteInfo.QZSS},
+        {"name": "IRNSS", "id": GeoSatelliteInfo.IRNSS},
+        {"name": "SBAS", "id": GeoSatelliteInfo.SBAS}
     ]
 
     component RssiElement : Rectangle {
@@ -302,6 +306,10 @@ Rectangle {
                 placeholderText: qsTr("Search")
                 Layout.fillWidth: true
                 onTextChanged: root.sortFilterModel.updateFilterString(text);
+                onVisibleChanged: {
+                    if (!visible && activeFocus)
+                        root.cleanupFocus()
+                }
             }
             IconButton {
                 selected: sortMenu.visible

@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #include "qdoublevector3d_p.h"
 #include <QtCore/qdatastream.h>
@@ -10,28 +11,20 @@ QT_BEGIN_NAMESPACE
 
 QDoubleVector3D QDoubleVector3D::normalized() const
 {
-    // Need some extra precision if the length is very small.
-    double len = double(xp) * double(xp) +
-                 double(yp) * double(yp) +
-                 double(zp) * double(zp);
+    const double len = length();
     if (qFuzzyIsNull(len - 1.0))
         return *this;
     else if (!qFuzzyIsNull(len))
-        return *this / (double)qSqrt(len);
+        return *this / len;
     else
         return QDoubleVector3D();
 }
 
 void QDoubleVector3D::normalize()
 {
-    // Need some extra precision if the length is very small.
-    double len = double(xp) * double(xp) +
-                 double(yp) * double(yp) +
-                 double(zp) * double(zp);
-    if (qFuzzyIsNull(len - 1.0) || qFuzzyIsNull(len))
+    double len = length();
+    if (qFuzzyIsNull(len) || qFuzzyIsNull(len - 1.0))
         return;
-
-    len = qSqrt(len);
 
     xp /= len;
     yp /= len;
@@ -67,7 +60,7 @@ double QDoubleVector3D::distanceToLine
 
 double QDoubleVector3D::length() const
 {
-    return qSqrt(xp * xp + yp * yp + zp * zp);
+    return qHypot(xp, yp, zp);
 }
 
 #ifndef QT_NO_DEBUG_STREAM

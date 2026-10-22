@@ -560,8 +560,8 @@ private slots:
         QCOMPARE(obj->sourceName(), QStringLiteral("positionpoll"));
         obj->setObjectName("firstObject");
         QSignalSpy enteredSpy(obj.get(),
-                              SIGNAL(areaEntered(QGeoAreaMonitorInfo, QGeoPositionInfo)));
-        QSignalSpy exitedSpy(obj.get(), SIGNAL(areaExited(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                              SIGNAL(areaEntered(QGeoAreaMonitorInfo,QGeoPositionInfo)));
+        QSignalSpy exitedSpy(obj.get(), SIGNAL(areaExited(QGeoAreaMonitorInfo,QGeoPositionInfo)));
 
         // using this -> no need for smart pointer
         LogFilePositionSource *source = new LogFilePositionSource(m_fileData, this);
@@ -574,9 +574,9 @@ private slots:
         QVERIFY(secondObj != nullptr);
         QCOMPARE(secondObj->sourceName(), QStringLiteral("positionpoll"));
         QSignalSpy enteredSpy2(secondObj.get(),
-                               SIGNAL(areaEntered(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                               SIGNAL(areaEntered(QGeoAreaMonitorInfo,QGeoPositionInfo)));
         QSignalSpy exitedSpy2(secondObj.get(),
-                              SIGNAL(areaExited(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                              SIGNAL(areaExited(QGeoAreaMonitorInfo,QGeoPositionInfo)));
         secondObj->setObjectName("secondObject");
 
         QGeoAreaMonitorInfo infoRectangle("Rectangle");
@@ -696,8 +696,8 @@ private slots:
         QCOMPARE(obj->sourceName(), QStringLiteral("positionpoll"));
         obj->setObjectName("firstObject");
         QSignalSpy enteredSpy(obj.get(),
-                              SIGNAL(areaEntered(QGeoAreaMonitorInfo, QGeoPositionInfo)));
-        QSignalSpy exitedSpy(obj.get(), SIGNAL(areaExited(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                              SIGNAL(areaEntered(QGeoAreaMonitorInfo,QGeoPositionInfo)));
+        QSignalSpy exitedSpy(obj.get(), SIGNAL(areaExited(QGeoAreaMonitorInfo,QGeoPositionInfo)));
 
         std::unique_ptr<QGeoAreaMonitorSource> obj2(
                 QGeoAreaMonitorSource::createSource(QStringLiteral("positionpoll"), 0));
@@ -705,9 +705,9 @@ private slots:
         QCOMPARE(obj2->sourceName(), QStringLiteral("positionpoll"));
         obj2->setObjectName("secondObject");
         QSignalSpy enteredSpy2(obj2.get(),
-                               SIGNAL(areaEntered(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                               SIGNAL(areaEntered(QGeoAreaMonitorInfo,QGeoPositionInfo)));
         QSignalSpy exitedSpy2(obj2.get(),
-                              SIGNAL(areaExited(QGeoAreaMonitorInfo, QGeoPositionInfo)));
+                              SIGNAL(areaExited(QGeoAreaMonitorInfo,QGeoPositionInfo)));
 
         // using this -> no need for smart pointer
         LogFilePositionSource *source = new LogFilePositionSource(m_fileData, this);
@@ -797,7 +797,7 @@ private slots:
         info.setPersistent(true);
         info.setName("RectangleAreaMonitor");
         QTest::newRow("Rectangle Test") << info  << 45
-                << QString("QGeoAreaMonitorInfo(\"RectangleAreaMonitor\", QGeoShape(Rectangle), "
+                << QString("QGeoAreaMonitorInfo(\"RectangleAreaMonitor\", QGeoShape(Rectangle, (), ()), "
                               "persistent: true, expiry: QDateTime(Invalid)) 45");
 
         info = QGeoAreaMonitorInfo();
@@ -808,7 +808,7 @@ private slots:
         map.insert(QString("foobarKey"), QVariant(45)); //should be ignored
         info.setNotificationParameters(map);
         QTest::newRow("Circle Test") << info  << 45
-                << QString("QGeoAreaMonitorInfo(\"CircleAreaMonitor\", QGeoShape(Circle), "
+                << QString("QGeoAreaMonitorInfo(\"CircleAreaMonitor\", QGeoShape(Circle, center=(), radius=-1), "
                               "persistent: false, expiry: QDateTime(Invalid)) 45");
 
         // we ignore any further QDateTime related changes to avoid depending on QDateTime related
@@ -829,9 +829,6 @@ private slots:
 
     void multipleThreads()
     {
-#if defined(Q_OS_MACOS) && defined(Q_PROCESSOR_ARM)
-        QSKIP("This test randomly hangs on macOS ARM (QTBUG-110931)");
-#endif
         std::unique_ptr<QGeoAreaMonitorSource> obj(
                 QGeoAreaMonitorSource::createSource(QStringLiteral("positionpoll"), 0));
         QVERIFY(obj != nullptr);
@@ -872,13 +869,13 @@ private slots:
         singleShot_enter.setArea(QGeoRectangle(QGeoCoordinate(-27.67, 153.093), 0.2, 0.2));
         QVERIFY(singleShot_enter.isValid());
         QVERIFY(obj->requestUpdate(singleShot_enter,
-                                   SIGNAL(areaEntered(QGeoAreaMonitorInfo, QGeoPositionInfo))));
+                                   SIGNAL(areaEntered(QGeoAreaMonitorInfo,QGeoPositionInfo))));
 
         QGeoAreaMonitorInfo singleShot_exit("SingleShot_on_Exited");
         singleShot_exit.setArea(QGeoRectangle(QGeoCoordinate(-27.70, 153.093), 0.2, 0.2));
         QVERIFY(singleShot_exit.isValid());
         QVERIFY(obj->requestUpdate(singleShot_exit,
-                                   SIGNAL(areaExited(QGeoAreaMonitorInfo, QGeoPositionInfo))));
+                                   SIGNAL(areaExited(QGeoAreaMonitorInfo,QGeoPositionInfo))));
 
         // wait until we read all data
         QTRY_COMPARE_WITH_TIMEOUT(noDataSpy.size(), 1, 5000);
@@ -900,7 +897,9 @@ private slots:
         // This is needed to check that the connection tracking logic in
         // connectNotify()/disconnectNotify() is working properly.
         QCOMPARE(updatesStartedSpy.size(), 1);
-        QCOMPARE(updatesStoppedSpy.size(), 1);
+        // We use QTRY_COMPARE here, because stopUpdates() is now invoked via
+        // Qt::QueuedConnection in the positionpoll backend.
+        QTRY_COMPARE(updatesStoppedSpy.size(), 1);
     }
 
     void backendProperties()
@@ -917,6 +916,26 @@ private slots:
 
         QCOMPARE(obj->backendProperty(DummyMonitorSource::kTestProperty), 10);
         QCOMPARE(obj->backendProperty(invalidProperty), QVariant());
+    }
+
+    void randomSignalName()
+    {
+        auto src = std::unique_ptr<QGeoAreaMonitorSource>(
+                QGeoAreaMonitorSource::createSource(QStringLiteral("positionpoll"), nullptr));
+        QVERIFY(src);
+
+        QGeoAreaMonitorInfo infoCircle("Circle");
+        infoCircle.setArea(QGeoCircle(QGeoCoordinate(-27.70, 153.093), 10000));
+        QVERIFY(infoCircle.isValid());
+
+        // empty signal -> invalid
+        QVERIFY(!src->requestUpdate(infoCircle, ""));
+
+        // non-existent single-char signal -> invalid
+        QVERIFY(!src->requestUpdate(infoCircle, "a"));
+
+        // non-existent multi-char signal -> invalid
+        QVERIFY(!src->requestUpdate(infoCircle, "abcd"));
     }
 };
 

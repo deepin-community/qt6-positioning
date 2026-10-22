@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QGEOSHAPE_H
 #define QGEOSHAPE_H
@@ -20,7 +21,6 @@ class Q_POSITIONING_EXPORT QGeoShape
     Q_PROPERTY(bool isValid READ isValid)
     Q_PROPERTY(bool isEmpty READ isEmpty)
     Q_PROPERTY(QGeoCoordinate center READ center)
-    Q_ENUMS(ShapeType)
 
 public:
     QGeoShape();
@@ -34,6 +34,7 @@ public:
         PathType,
         PolygonType
     };
+    Q_ENUM(ShapeType)
 
     ShapeType type() const;
 

@@ -1,5 +1,6 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
+// Qt-Security score:significant reason:default
 
 #ifndef QGEOPATH_P_H
 #define QGEOPATH_P_H
@@ -132,34 +133,33 @@ inline static void updateBBox(const QList<QGeoCoordinate> &m_path, QList<double>
                            QGeoCoordinate(m_minLati, currentMaxLongi));
 }
 
-// Lazy by default. Eager, within the module, used only in MapItems/MapObjectsQSG
-class Q_POSITIONING_EXPORT QGeoPathPrivate : public QGeoShapePrivate
+// Pure virtual base that can be used in both
+// QGeoPathPrivate and QGeoPolygonPrivate.
+// Does not implement QGeoShape::contains(), because both derived classes
+// have their own implementations. As a result, also does not implement
+// QGeoShape::clone().
+class Q_POSITIONING_EXPORT QGeoPathPrivateBase : public QGeoShapePrivate
 {
 public:
-    QGeoPathPrivate();
-    QGeoPathPrivate(const QList<QGeoCoordinate> &path, const qreal width = 0.0);
-    ~QGeoPathPrivate();
+    QGeoPathPrivateBase();
+    QGeoPathPrivateBase(const QList<QGeoCoordinate> &path);
+    QGeoPathPrivateBase(const QGeoPathPrivateBase &other);
+    ~QGeoPathPrivateBase() override;
 
 // QGeoShape API
-    virtual QGeoShapePrivate *clone() const override;
-    virtual bool isValid() const override;
-    virtual bool isEmpty() const override;
-    virtual QGeoCoordinate center() const override;
-    virtual bool operator==(const QGeoShapePrivate &other) const override;
-    virtual bool contains(const QGeoCoordinate &coordinate) const override;
-    virtual QGeoRectangle boundingGeoRectangle() const override;
+    bool isValid() const override;
+    bool isEmpty() const override;
+    QGeoCoordinate center() const override;
+    bool operator==(const QGeoShapePrivate &other) const override;
+    QGeoRectangle boundingGeoRectangle() const override;
     size_t hash(size_t seed) const override;
 
-// QGeoPathPrivate API
+// QGeoPathPrivateBase API
     virtual const QList<QGeoCoordinate> &path() const;
-    virtual bool lineContains(const QGeoCoordinate &coordinate) const;
-    virtual qreal width() const;
     virtual double length(qsizetype indexFrom, qsizetype indexTo) const;
     virtual qsizetype size() const;
     virtual QGeoCoordinate coordinateAt(qsizetype index) const;
     virtual bool containsCoordinate(const QGeoCoordinate &coordinate) const;
-
-    virtual void setWidth(const qreal &width);
     virtual void translate(double degreesLatitude, double degreesLongitude);
     virtual void setPath(const QList<QGeoCoordinate> &path);
     virtual void clearPath();
@@ -168,32 +168,56 @@ public:
     virtual void replaceCoordinate(qsizetype index, const QGeoCoordinate &coordinate);
     virtual void removeCoordinate(const QGeoCoordinate &coordinate);
     virtual void removeCoordinate(qsizetype index);
-    virtual void computeBoundingBox();
     virtual void markDirty();
+
+    void ensureBoundingBoxUpdated() const;
 
 // data members
     QList<QGeoCoordinate> m_path;
-    qreal m_width = 0;
-    QGeoRectangle m_bbox; // cached
-    double m_leftBoundWrapped; // cached
-    bool m_bboxDirty = false;
+    mutable QGeoRectangle m_bbox; // cached
+    mutable std::atomic<bool> m_bboxDirty = true; // default is dirty!
 };
 
-class Q_POSITIONING_EXPORT QGeoPathPrivateEager : public QGeoPathPrivate
+// Lazy by default. Eager, within the module, used only in MapItems/MapObjectsQSG
+class Q_POSITIONING_EXPORT QGeoPathPrivate : public QGeoPathPrivateBase
+{
+public:
+    QGeoPathPrivate();
+    QGeoPathPrivate(const QList<QGeoCoordinate> &path, const qreal width = 0.0);
+    ~QGeoPathPrivate();
+
+// QGeoShape API
+    QGeoShapePrivate *clone() const override;
+    bool operator==(const QGeoShapePrivate &other) const override;
+    bool contains(const QGeoCoordinate &coordinate) const override;
+    size_t hash(size_t seed) const override;
+
+// QGeoPathPrivateBase API: nothing to override
+
+// QGeoPathPrivate API
+    bool lineContains(const QGeoCoordinate &coordinate) const;
+    qreal width() const;
+    void setWidth(const qreal &width);
+
+// data members
+    qreal m_width = 0;
+};
+
+class Q_POSITIONING_EXPORT QGeoPathPrivateEager final : public QGeoPathPrivate
 {
 public:
     QGeoPathPrivateEager();
     QGeoPathPrivateEager(const QList<QGeoCoordinate> &path, const qreal width = 0.0);
+    QGeoPathPrivateEager(const QGeoPathPrivateEager &other);
     ~QGeoPathPrivateEager();
 
 // QGeoShapePrivate API
-    virtual QGeoShapePrivate *clone() const override;
-    virtual void translate(double degreesLatitude, double degreesLongitude) override;
+    QGeoShapePrivate *clone() const override;
 
-// QGeoShapePrivate API
-    virtual void markDirty() override;
-    virtual void addCoordinate(const QGeoCoordinate &coordinate) override;
-    virtual void computeBoundingBox() override;
+// QGeoPathPrivateBase API
+    void translate(double degreesLatitude, double degreesLongitude) override;
+    void markDirty() override;
+    void addCoordinate(const QGeoCoordinate &coordinate) override;
 
 // *Eager API
     void updateBoundingBox();
